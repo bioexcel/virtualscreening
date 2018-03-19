@@ -38,8 +38,8 @@ https://www.anaconda.com/
     mv biopython-1.69-np113py27_0.tar.bz2 anaconda2/pkgs/
     conda create -n vsenv python=2.7
     source activate vsenv
-    conda install anaconda2/pkgs/biopython-1.69-np113py27_0.tar.bz2
     conda install --use-index-cache --offline --use-local  numpy pyyaml requests nose
+    conda install anaconda2/pkgs/biopython-1.69-np113py27_0.tar.bz2
     echo "~/virtualscreening" > ~/anaconda2/envs/vsenv/lib/python2.7/site-packages/virtualscreening.pth
     ```
 
