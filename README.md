@@ -27,7 +27,7 @@ https://www.anaconda.com/
     git clone https://github.com/bioexcel/virtualscreening.git
     wget https://repo.continuum.io/archive/Anaconda2-5.0.0-Linux-x86_64.sh
     wget https://repo.continuum.io/pkgs/free/linux-64/biopython-1.69-np113py27_0.tar.bz2
-
+    wget https://repo.continuum.io/pkgs/free/linux-64/nose-1.3.7-py27_1.tar.bz2
     ```
 
 2. On the disconnected computer:
@@ -35,11 +35,13 @@ https://www.anaconda.com/
     ```bash
     bash Anaconda2-5.0.0-Linux-x86_64.sh
     source .bashrc
-    mv biopython-1.69-np113py27_0.tar.bz2 anaconda2/pkgs/
+    mv biopython-1.69-np113py27_0.tar.bz2 nose-1.3.7-py27_1.tar.bz2 ~/anaconda2/pkgs/
+    
     conda create -n vsenv python=2.7
     source activate vsenv
-    conda install --use-index-cache --offline --use-local  numpy pyyaml requests nose
-    conda install anaconda2/pkgs/biopython-1.69-np113py27_0.tar.bz2
+    conda install --use-index-cache --offline --use-local  numpy pyyaml requests
+    conda install ~/anaconda2/pkgs/nose-1.3.7-py27_1.tar.bz2
+    conda install ~/anaconda2/pkgs/biopython-1.69-np113py27_0.tar.bz2
     echo "~/virtualscreening" > ~/anaconda2/envs/vsenv/lib/python2.7/site-packages/virtualscreening.pth
     ```
 
