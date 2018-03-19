@@ -1,0 +1,488 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Source Code Documentation &#8212; pymdsetup alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to pymdsetup’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="source-code-documentation">
+<h1>Source Code Documentation<a class="headerlink" href="#source-code-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-gromacs_wrapper.pdb2gmx">
+<span id="gromacs-wrapper-pdb2gmx-module"></span><h2>GROMACS Wrapper - pdb2gmx module<a class="headerlink" href="#module-gromacs_wrapper.pdb2gmx" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper module for the GROMACS pdb2gmx module</p>
+<dl class="class">
+<dt id="gromacs_wrapper.pdb2gmx.Pdb2gmx">
+<em class="property">class </em><code class="descclassname">gromacs_wrapper.pdb2gmx.</code><code class="descname">Pdb2gmx</code><span class="sig-paren">(</span><em>input_structure_pdb_path</em>, <em>output_gro_path</em>, <em>output_top_tar_path</em>, <em>properties</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/pdb2gmx.html#Pdb2gmx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.pdb2gmx.Pdb2gmx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for the 5.1.2 version of the GROMACS pdb2gmx module.
+:param input_structure_pdb_path: Path to the input PDB file.
+:type input_structure_pdb_path: str
+:param output_gro_path: Path to the output GRO file.
+:type output_gro_path: str
+:param output_top_tar_path: Path the output TOP topology in TAR format.
+:type output_top_tar_path: str
+:param properties: output_top_path (str): Path the output TOP file.</p>
+<blockquote>
+<div><p>output_itp_path (str): Path the output itp file.
+water_type (str): Water molecule type.</p>
+<blockquote>
+<div>Valid values: tip3p, spce, etc.</div></blockquote>
+<dl class="docutils">
+<dt>force_field (str): Force field to be used during the conversion.</dt>
+<dd>Valid values: amber99sb-ildn, oplsaa, etc.</dd>
+<dt>ignh (bool): Should pdb2gmx ignore the hidrogens in the original</dt>
+<dd>structure.</dd>
+</dl>
+<p>gmx_path (str): Path to the GROMACS executable binary.</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="gromacs_wrapper.pdb2gmx.Pdb2gmx.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/pdb2gmx.html#Pdb2gmx.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.pdb2gmx.Pdb2gmx.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the GROMACS pdb2gmx module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gromacs_wrapper.editconf">
+<span id="gromacs-wrapper-editconf-module"></span><h2>GROMACS Wrapper - editconf module<a class="headerlink" href="#module-gromacs_wrapper.editconf" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper module for the GROMACS editconf module</p>
+<dl class="class">
+<dt id="gromacs_wrapper.editconf.Editconf">
+<em class="property">class </em><code class="descclassname">gromacs_wrapper.editconf.</code><code class="descname">Editconf</code><span class="sig-paren">(</span><em>input_gro_path</em>, <em>output_gro_path</em>, <em>properties</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/editconf.html#Editconf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.editconf.Editconf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the 5.1.2 version of the editconf module
+:param input_gro_path: Path to the input GRO file.
+:type input_gro_path: str
+:param output_gro_path: Path to the output GRO file.
+:type output_gro_path: str
+:param properties:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>distance_to_molecule (float): Distance of the box from the outermost</dt>
+<dd>atom in nm. ie 1.0nm = 10 Angstroms.</dd>
+<dt>box_type (str): Geometrical shape of the solvent box.</dt>
+<dd>Available box types: octahedron, cubic, etc.</dd>
+</dl>
+<p>center_molecule (bool): Center molecule in the box.</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="gromacs_wrapper.editconf.Editconf.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/editconf.html#Editconf.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.editconf.Editconf.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the GROMACS editconf module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gromacs_wrapper.genion">
+<span id="gromacs-wrapper-genion-module"></span><h2>GROMACS Wrapper - genion module<a class="headerlink" href="#module-gromacs_wrapper.genion" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper for the GROMACS genion module</p>
+<dl class="class">
+<dt id="gromacs_wrapper.genion.Genion">
+<em class="property">class </em><code class="descclassname">gromacs_wrapper.genion.</code><code class="descname">Genion</code><span class="sig-paren">(</span><em>input_tpr_path</em>, <em>output_gro_path</em>, <em>input_top_tar_path</em>, <em>output_top_tar_path</em>, <em>properties</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/genion.html#Genion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.genion.Genion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the 5.1.2 version of the genion module
+:param input_tpr_path: Path to the input portable run input TPR file.
+:type input_tpr_path: str
+:param output_gro_path: Path to the input structure GRO file.
+:type output_gro_path: str
+:param input_top_tar_path: Path the input TOP topology in TAR format.
+:type input_top_tar_path: str
+:param output_top_tar_path: Path the output topology TOP and ITP files</p>
+<blockquote>
+<div>tarball.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>properties</strong> (<em>dic</em>) &#8211; <p>output_top_path (str): Path the output topology TOP file.
+replaced_group (str): Group of molecules that will be replaced by the</p>
+<blockquote>
+<div>solvent.</div></blockquote>
+<p>neutral (bool): Neutralize the charge of the system.
+concentration (float): Concentration of the ions in (mol/liter).
+seed (int): Seed for random number generator.
+gmx_path (str): Path to the GROMACS executable binary.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gromacs_wrapper.genion.Genion.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/genion.html#Genion.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.genion.Genion.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the GROMACS genion module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gromacs_wrapper.grompp">
+<span id="gromacs-wrapper-grompp-module"></span><h2>GROMACS Wrapper - grompp module<a class="headerlink" href="#module-gromacs_wrapper.grompp" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper for the GROMACS grompp module</p>
+<dl class="class">
+<dt id="gromacs_wrapper.grompp.Grompp">
+<em class="property">class </em><code class="descclassname">gromacs_wrapper.grompp.</code><code class="descname">Grompp</code><span class="sig-paren">(</span><em>input_gro_path</em>, <em>input_top_tar_path</em>, <em>input_mdp_path</em>, <em>output_tpr_path</em>, <em>properties</em>, <em>input_cpt_path=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/grompp.html#Grompp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.grompp.Grompp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the 5.1.2 version of the GROMACS grompp module.
+The GROMACS preprocessor module needs to be feeded with the input system
+and the molecular dynamics parameter file MDP, to create a portable binary
+run input file TPR.
+:param input_gro_path: Path to the input GROMACS structure GRO file.
+:type input_gro_path: str
+:param input_top_tar_path: Path the input GROMACS topology TOP file.
+:type input_top_tar_path: str
+:param output_tpr_path: Path to the output portable binary run file TPR.
+:type output_tpr_path: str
+:param input_cpt_path: Path to the input GROMACS checkpoint file CPT.
+:type input_cpt_path: str
+:param input_mdp_path: Path to the input GROMACS parameter input file MDP.
+:type input_mdp_path: str
+:param properties: gmx_path (str): Path to the GROMACS executable binary.
+:type properties: dic</p>
+<dl class="method">
+<dt id="gromacs_wrapper.grompp.Grompp.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/grompp.html#Grompp.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.grompp.Grompp.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the GROMACS grompp module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gromacs_wrapper.mdrun">
+<span id="gromacs-wrapper-mdrun-module"></span><h2>GROMACS Wrapper - mdrun module<a class="headerlink" href="#module-gromacs_wrapper.mdrun" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper for the GROMACS mdrun module</p>
+<dl class="class">
+<dt id="gromacs_wrapper.mdrun.Mdrun">
+<em class="property">class </em><code class="descclassname">gromacs_wrapper.mdrun.</code><code class="descname">Mdrun</code><span class="sig-paren">(</span><em>input_tpr_path</em>, <em>output_trr_path</em>, <em>output_gro_path</em>, <em>properties</em>, <em>output_cpt_path=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/mdrun.html#Mdrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.mdrun.Mdrun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the 5.1.2 version of the mdrun module
+:param input_tpr_path: Path to the portable binary run input file TPR.
+:type input_tpr_path: str
+:param output_trr_path: Path to the GROMACS uncompressed raw trajectory file TRR.
+:type output_trr_path: str
+:param output_gro_path: Path to the output GROMACS structure GRO file.
+:type output_gro_path: str
+:param properties: output_edr_path (str): Path to the output GROMACS portable energy file EDR.</p>
+<blockquote>
+<div>output_xtc_path (str): Path to the GROMACS compressed trajectory file XTC.
+num_threads (str): The number of threads that is going to be used.
+gmx_path (str): Path to the GROMACS executable binary.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output_cpt_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the output GROMACS checkpoint file CPT.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gromacs_wrapper.mdrun.Mdrun.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/mdrun.html#Mdrun.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.mdrun.Mdrun.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the GROMACS mdrun module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gromacs_wrapper.rms">
+<span id="gromacs-wrapper-rms-module"></span><h2>GROMACS Wrapper - rms module<a class="headerlink" href="#module-gromacs_wrapper.rms" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper for the GROMACS rms module</p>
+<dl class="class">
+<dt id="gromacs_wrapper.rms.Rms">
+<em class="property">class </em><code class="descclassname">gromacs_wrapper.rms.</code><code class="descname">Rms</code><span class="sig-paren">(</span><em>input_gro_path</em>, <em>input_trr_path</em>, <em>output_xvg_path</em>, <em>properties</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/rms.html#Rms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.rms.Rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the 5.1.2 version of the rms module
+:param input_gro_path: Path to the original (before launching the trajectory) GROMACS structure file GRO.
+:type input_gro_path: str
+:param input_trr_paht: Path to the GROMACS uncompressed raw trajectory file TRR.
+:type input_trr_paht: str
+:param output_xvg_path: Path to the simple xmgrace plot file XVG.
+:type output_xvg_path: str
+:param properties: gmx_path (str): Path to the GROMACS executable binary.
+:type properties: dic</p>
+<dl class="method">
+<dt id="gromacs_wrapper.rms.Rms.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/rms.html#Rms.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.rms.Rms.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the GROMACS rms module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gromacs_wrapper.solvate">
+<span id="gromacs-wrapper-solvate-module"></span><h2>GROMACS Wrapper - solvate module<a class="headerlink" href="#module-gromacs_wrapper.solvate" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper module for the GROMACS solvate module</p>
+<dl class="class">
+<dt id="gromacs_wrapper.solvate.Solvate">
+<em class="property">class </em><code class="descclassname">gromacs_wrapper.solvate.</code><code class="descname">Solvate</code><span class="sig-paren">(</span><em>input_solute_gro_path</em>, <em>output_gro_path</em>, <em>input_top_tar_path</em>, <em>output_top_tar_path</em>, <em>properties</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/solvate.html#Solvate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.solvate.Solvate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the 5.1.2 version of the GROMACS solvate module
+:param input_solute_gro_path: Path to the input GRO file.
+:type input_solute_gro_path: str
+:param output_gro_path: Path to the output GRO file.
+:type output_gro_path: str
+:param input_top_tar_path: Path the input TOP topology in TAR format.
+:type input_top_tar_path: str
+:param output_top_tar_path: Path the output topology in TAR format.
+:type output_top_tar_path: str
+:param properties: output_top_path (str): Path the output TOP file.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>intput_solvent_gro_path (str): Path to the GRO file contanining the</dt>
+<dd>structure of the solvent.</dd>
+</dl>
+<p>gmx_path (str): Path to the GROMACS executable binary.</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="gromacs_wrapper.solvate.Solvate.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs_wrapper/solvate.html#Solvate.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs_wrapper.solvate.Solvate.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the GROMACS solvate module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmb_api.pdb">
+<span id="mmb-api-pdb-module"></span><h2>MMB API -  pdb module<a class="headerlink" href="#module-mmb_api.pdb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="mmb_api.pdb.MmbPdb">
+<em class="property">class </em><code class="descclassname">mmb_api.pdb.</code><code class="descname">MmbPdb</code><span class="sig-paren">(</span><em>pdb_code</em>, <em>output_pdb_path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mmb_api/pdb.html#MmbPdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mmb_api.pdb.MmbPdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for the MMB group PDB REST API.
+This class is a wrapper for the PDB (<a class="reference external" href="http://www.rcsb.org/pdb/home/home.do">http://www.rcsb.org/pdb/home/home.do</a>)
+mirror of the MMB group REST API (<a class="reference external" href="http://mmb.irbbarcelona.org/api/">http://mmb.irbbarcelona.org/api/</a>)
+:param pdb_code: Protein Data Bank (PDB) four letter code.</p>
+<blockquote>
+<div>ie: &#8216;2ki5&#8217;</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output_pdb_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; File path where the PDB file will be stored.
+ie: &#8216;/home/user1/2ki5.pdb&#8217;</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="mmb_api.pdb.MmbPdb.get_pdb">
+<code class="descname">get_pdb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mmb_api/pdb.html#MmbPdb.get_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mmb_api.pdb.MmbPdb.get_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the PDB file content of <cite>self._pdb_code</cite>
+to <cite>self._output_pdb_path</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmb_api.uniprot">
+<span id="mmb-api-uniprot-module"></span><h2>MMB API -  uniprot module<a class="headerlink" href="#module-mmb_api.uniprot" title="Permalink to this headline">¶</a></h2>
+<p>Mutation fetcher module</p>
+<dl class="class">
+<dt id="mmb_api.uniprot.MmbVariants">
+<em class="property">class </em><code class="descclassname">mmb_api.uniprot.</code><code class="descname">MmbVariants</code><span class="sig-paren">(</span><em>pdb_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mmb_api/uniprot.html#MmbVariants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mmb_api.uniprot.MmbVariants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for the MMB group UNIPROT REST API.
+This class is a wrapper for the UNIPROT (<a class="reference external" href="http://www.uniprot.org/">http://www.uniprot.org/</a>)
+mirror of the MMB group REST API (<a class="reference external" href="http://mmb.irbbarcelona.org/api/">http://mmb.irbbarcelona.org/api/</a>)
+:param pdb_code: Protein Data Bank (PDB) four letter code.</p>
+<blockquote>
+<div>ie: &#8216;2ki5&#8217;</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="mmb_api.uniprot.MmbVariants.get_pdb_variants">
+<code class="descname">get_pdb_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mmb_api/uniprot.html#MmbVariants.get_pdb_variants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mmb_api.uniprot.MmbVariants.get_pdb_variants" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns the variants of the <cite>self._uniprot</cite> mapped to the</dt>
+<dd><cite>self_pdb</cite>.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of mapped variants</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmb_api.uniprot.MmbVariants.get_uniprot">
+<code class="descname">get_uniprot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mmb_api/uniprot.html#MmbVariants.get_uniprot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mmb_api.uniprot.MmbVariants.get_uniprot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the UNIPROT code corresponding to the <cite>self._pdb_code</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">UNIPROT code.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmb_api.uniprot.MmbVariants.get_variants">
+<code class="descname">get_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mmb_api/uniprot.html#MmbVariants.get_variants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mmb_api.uniprot.MmbVariants.get_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variants of the <cite>self._uniprot</cite> code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of variants</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-scwrl_wrapper.scwrl">
+<span id="scwrl-wrapper-scwrl-module"></span><h2>SCWRL Wrapper - scwrl module<a class="headerlink" href="#module-scwrl_wrapper.scwrl" title="Permalink to this headline">¶</a></h2>
+<p>Python wrapper module for SCWRL</p>
+<dl class="class">
+<dt id="scwrl_wrapper.scwrl.Scwrl4">
+<em class="property">class </em><code class="descclassname">scwrl_wrapper.scwrl.</code><code class="descname">Scwrl4</code><span class="sig-paren">(</span><em>input_pdb_path</em>, <em>output_pdb_path</em>, <em>properties</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scwrl_wrapper/scwrl.html#Scwrl4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scwrl_wrapper.scwrl.Scwrl4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class for the 4.0 version of SCWRL.
+:param input_pdb_path: Path to the input PDB file.
+:type input_pdb_path: str
+:param output_pdb_path: Path to the output mutated PDB file.
+:type output_pdb_path: srt
+:param properties: All properties and system path
+:type properties: dic</p>
+<dl class="method">
+<dt id="scwrl_wrapper.scwrl.Scwrl4.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scwrl_wrapper/scwrl.html#Scwrl4.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scwrl_wrapper.scwrl.Scwrl4.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches the execution of the SCWRL binary.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Source Code Documentation</a><ul>
+<li><a class="reference internal" href="#module-gromacs_wrapper.pdb2gmx">GROMACS Wrapper - pdb2gmx module</a></li>
+<li><a class="reference internal" href="#module-gromacs_wrapper.editconf">GROMACS Wrapper - editconf module</a></li>
+<li><a class="reference internal" href="#module-gromacs_wrapper.genion">GROMACS Wrapper - genion module</a></li>
+<li><a class="reference internal" href="#module-gromacs_wrapper.grompp">GROMACS Wrapper - grompp module</a></li>
+<li><a class="reference internal" href="#module-gromacs_wrapper.mdrun">GROMACS Wrapper - mdrun module</a></li>
+<li><a class="reference internal" href="#module-gromacs_wrapper.rms">GROMACS Wrapper - rms module</a></li>
+<li><a class="reference internal" href="#module-gromacs_wrapper.solvate">GROMACS Wrapper - solvate module</a></li>
+<li><a class="reference internal" href="#module-mmb_api.pdb">MMB API -  pdb module</a></li>
+<li><a class="reference internal" href="#module-mmb_api.uniprot">MMB API -  uniprot module</a></li>
+<li><a class="reference internal" href="#module-scwrl_wrapper.scwrl">SCWRL Wrapper - scwrl module</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to pymdsetup&#8217;s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/source.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Bioexcel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/source.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

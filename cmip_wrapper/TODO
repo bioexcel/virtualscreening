@@ -1,0 +1,26 @@
+Python module as "preppdb.pl"
+ Input Std PDB
+       Residue library
+ Outpot CMIP-PDB Coorfmt=2
+
+Titration wrapper
+ Input Std PDB
+ Input Std PDB with added Wat, IP, IM
+ Parameters 
+  titwat
+  titip
+  titim
+
+PBSolvation
+ Input CMIP-PDB
+ Output Solv. energy (Float)
+
+Einteraction
+ Input CMIP-PDB
+       Center of grid
+       CMIP-PDB side chain
+ Output Eint (float)
+
+Python module as "addX.pl"
+ Input PDB, mask
+ Output PDB

@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pymdsetup &#8212; pymdsetup alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pymdsetup">
+<h1>pymdsetup<a class="headerlink" href="#pymdsetup" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="command_wrapper.html">command_wrapper package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="command_wrapper.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_wrapper.html#module-command_wrapper.cmd_wrapper">command_wrapper.cmd_wrapper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_wrapper.html#module-command_wrapper">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">configuration package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#module-configuration.settings">configuration.settings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#module-configuration">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dummies_pycompss.html">dummies_pycompss package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dummies_pycompss.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dummies_pycompss.html#module-dummies_pycompss.api">dummies_pycompss.api module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dummies_pycompss.html#module-dummies_pycompss.constraint">dummies_pycompss.constraint module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dummies_pycompss.html#module-dummies_pycompss.parameter">dummies_pycompss.parameter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dummies_pycompss.html#pycompss-api-parameter">PyCOMPSs API - Parameter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dummies_pycompss.html#module-dummies_pycompss.task">dummies_pycompss.task module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dummies_pycompss.html#module-dummies_pycompss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ebi_api.html">ebi_api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ebi_api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebi_api.html#module-ebi_api.pdb">ebi_api.pdb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ebi_api.html#module-ebi_api">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gnuplot_wrapper.html">gnuplot_wrapper package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gnuplot_wrapper.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gnuplot_wrapper.html#module-gnuplot_wrapper.gnuplot">gnuplot_wrapper.gnuplot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gnuplot_wrapper.html#module-gnuplot_wrapper">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gromacs_wrapper.html">gromacs_wrapper package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper.editconf">gromacs_wrapper.editconf module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper.genion">gromacs_wrapper.genion module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper.grompp">gromacs_wrapper.grompp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper.mdrun">gromacs_wrapper.mdrun module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper.pdb2gmx">gromacs_wrapper.pdb2gmx module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper.rms">gromacs_wrapper.rms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper.solvate">gromacs_wrapper.solvate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs_wrapper.html#module-gromacs_wrapper">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmb_api.html">mmb_api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmb_api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmb_api.html#module-mmb_api.pdb">mmb_api.pdb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmb_api.html#module-mmb_api.uniprot">mmb_api.uniprot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmb_api.html#module-mmb_api">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scwrl_wrapper.html">scwrl_wrapper package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scwrl_wrapper.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scwrl_wrapper.html#module-scwrl_wrapper.scwrl">scwrl_wrapper.scwrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scwrl_wrapper.html#module-scwrl_wrapper">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">test package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="test.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.fixtures">test.fixtures module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_editconf">test.test_editconf module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_genion">test.test_genion module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_gnuplot">test.test_gnuplot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_gppmin">test.test_gppmin module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_grompp">test.test_grompp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_mdrun">test.test_mdrun module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_pdb2gmx">test.test_pdb2gmx module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_rms">test.test_rms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_scwrl">test.test_scwrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test.test_solvate">test.test_solvate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#module-test">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">tools package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#module-tools.file_utils">tools.file_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#module-tools">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">workflows package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html#module-workflows.gromacs_full">workflows.gromacs_full module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html#workflows-gromacs-full-pycompss-module">workflows.gromacs_full_pycompss module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html#module-workflows">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/modules.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Bioexcel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/modules.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

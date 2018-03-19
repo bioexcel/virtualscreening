@@ -1,0 +1,5 @@
+#GNUPLOT
+gnuplot_input_xvg_path:
+    class: File
+    location: ../../cwl/test/data/rmsd.xvg
+gnuplot_output_png_path: gplot.png

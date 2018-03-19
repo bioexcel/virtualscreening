@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>scwrl_wrapper.scwrl &#8212; pymdsetup alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scwrl_wrapper.scwrl</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Python wrapper module for SCWRL</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">Bio.PDB.PDBParser</span> <span class="k">import</span> <span class="n">PDBParser</span>
+<span class="kn">from</span> <span class="nn">Bio.PDB</span> <span class="k">import</span> <span class="n">PDBIO</span>
+<span class="kn">import</span> <span class="nn">configuration.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">from</span> <span class="nn">command_wrapper</span> <span class="k">import</span> <span class="n">cmd_wrapper</span>
+<span class="kn">from</span> <span class="nn">tools</span> <span class="k">import</span> <span class="n">file_utils</span> <span class="k">as</span> <span class="n">fu</span>
+
+<div class="viewcode-block" id="Scwrl4"><a class="viewcode-back" href="../../source.html#scwrl_wrapper.scwrl.Scwrl4">[docs]</a><span class="k">class</span> <span class="nc">Scwrl4</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper class for the 4.0 version of SCWRL.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        input_pdb_path (str): Path to the input PDB file.</span>
+<span class="sd">        output_pdb_path (srt): Path to the output mutated PDB file.</span>
+<span class="sd">        properties (dic): All properties and system path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_pdb_path</span><span class="p">,</span> <span class="n">output_pdb_path</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">properties</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_pdb_path</span> <span class="o">=</span> <span class="n">input_pdb_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_pdb_path</span> <span class="o">=</span> <span class="n">output_pdb_path</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">((</span><span class="s2">&quot;(?P&lt;chain&gt;[a-zA-Z]</span><span class="si">{1}</span><span class="s2">).(?P&lt;wt&gt;[a-zA-Z]</span><span class="si">{3}</span><span class="s2">)(?P&lt;resnum&gt;\d+)(?P&lt;mt&gt;[a-zA-Z]</span><span class="si">{3}</span><span class="s2">)&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;mutation&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scwrl4_path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scwrl4_path&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mut</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mutation&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;step&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Scwrl4.launch"><a class="viewcode-back" href="../../source.html#scwrl_wrapper.scwrl.Scwrl4.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Launches the execution of the SCWRL binary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out_log</span><span class="p">,</span> <span class="n">err_log</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">mutation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mut</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Read structure with Biopython</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">PDBParser</span><span class="p">(</span><span class="n">PERMISSIVE</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_pdb_path</span><span class="p">)</span>  <span class="c1"># s random id never used</span>
+
+            <span class="c1"># Remove the side chain of the AA to be mutated</span>
+            <span class="n">chain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span>
+            <span class="n">resnum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="p">[</span><span class="s1">&#39;resnum&#39;</span><span class="p">])</span>
+            <span class="n">residue</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">chain</span><span class="p">][(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">resnum</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)]</span>
+            <span class="n">backbone_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;CA&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="s1">&#39;CB&#39;</span><span class="p">]</span>
+            <span class="n">not_backbone_atoms</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># The following formula does not work. Biopython bug?</span>
+            <span class="c1"># for atom in residue:</span>
+            <span class="c1">#     if atom.id not in backbone_atoms:</span>
+            <span class="c1">#         residue.detach_child(atom.id)</span>
+
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">residue</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">backbone_atoms</span><span class="p">:</span>
+                    <span class="n">not_backbone_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">not_backbone_atoms</span><span class="p">:</span>
+                <span class="n">residue</span><span class="o">.</span><span class="n">detach_child</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+            <span class="c1"># Change residue name</span>
+            <span class="n">residue</span><span class="o">.</span><span class="n">resname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="p">[</span><span class="s1">&#39;mt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+            <span class="c1"># Write resultant structure</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">PDBIO</span><span class="p">()</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">set_structure</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+            <span class="n">prepared_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mut</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="s1">&#39;prepared.pdb&#39;</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">prepared_file_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prepared_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_pdb_path</span>
+
+        <span class="n">scrwl</span> <span class="o">=</span> <span class="s1">&#39;Scwrl4&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scwrl4_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">scwrl4_path</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">scrwl</span><span class="p">,</span> <span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="n">prepared_file_path</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_pdb_path</span><span class="p">]</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="n">cmd_wrapper</span><span class="o">.</span><span class="n">CmdWrapper</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">out_log</span><span class="p">,</span> <span class="n">err_log</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">command</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></div></div>
+
+<span class="c1">#Creating a main function to be compatible with CWL</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../scwrl_wrapper.html#scwrl_wrapper.scwrl.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">step</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">prop</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">step</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">mut</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">YamlReader</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">system</span><span class="p">)</span><span class="o">.</span><span class="n">get_prop_dic</span><span class="p">(</span><span class="n">mut</span><span class="p">)[</span><span class="n">step</span><span class="p">]</span>
+    <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">Scwrl4</span><span class="p">(</span><span class="n">input_pdb_path</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+           <span class="n">output_pdb_path</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+           <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+           <span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">)</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Bioexcel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,8 @@
+#RMS
+rms_input_gro_path:
+    class: File
+    path:  ../../cwl/test/data/gio.gro
+rms_input_trr_path:
+    class: File
+    path:  ../../cwl/test/data/mdeq.trr
+rms_output_xvg_path: rms.xvg

@@ -1,0 +1,9 @@
+#SOLVATE
+sol_input_solute_gro_path:
+    class: File
+    location: ../../cwl/test/data/ec.gro
+sol_output_gro_path: sol.gro
+sol_input_top_zip_path:
+    class: File
+    location: ../../cwl/test/data/p2g_top.zip
+sol_output_top_zip_path: sol_top.zip

@@ -1,0 +1,291 @@
+######################## pymdsetup configuration file ########################
+
+########################## System dependent paths ############################
+linux:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
+  workflow_path: /home/pau/projects/pymdsetup/gpu_2mut_10ns
+  mdp_path: /home/pau/projects/pymdsetup/workflows/mdp
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
+
+macos:
+  gmx_path: /usr/local/bin/gmx
+  scwrl4_path: /Users/pau/soft/scwrl4/Scwrl4
+  workflow_path: /Users/pau/projects/pymdsetup/gpu_2mut_10ns
+  mdp_path: /Users/pau/projects/pymdsetup/workflows/mdp
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /Users/pau/Desktop/structure.pdb
+
+virtualbox:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/compss/scwrl/scwrl4/Scwrl4/Scwrl4
+  workflow_path: /home/compss/pymdsetup/gpu_2mut_10ns
+  mdp_path: /home/compss/pymdsetup/workflows/mdp/
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/compss/structure.pdb
+
+open_nebula:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/user/scwrl4/Scwrl4
+  workflow_path: /home/user/pymdsetup/gpu_2mut_10ns
+  mdp_path: /home/user/pymdsetup/workflows/mdp/
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/user/structure.pdb
+
+mare_nostrum:
+  gmx_path: /gpfs/home/bsc23/bsc23210/gromacs/bin/gmx
+  scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
+  workflow_path: /gpfs/scratch/bsc23/bsc23210/gpu_2mut_10ns
+  mdp_path: /gpfs/home/bsc23/bsc23210/pymdsetup/workflows/mdp/
+  gnuplot_path: gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /gpfs/home/bsc23/bsc23210/structure.pdb
+
+minotauro:
+  gmx_path: gmx_mpi
+  scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
+  workflow_path: /gpfs/scratch/bsc23/bsc23210/gpu_2mut_10ns
+  mdp_path: /gpfs/home/bsc23/bsc23210/pymdsetup/workflows/mdp/
+  gnuplot_path: /gpfs/apps/NVIDIA/GNUPLOT/4.6.3/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  #   # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /gpfs/home/bsc23/bsc23210/structure.pdb
+
+archer:
+  gmx_path: gmx
+  scwrl4_path: /home/d118/d118/andrio/scwrl/Scwrl4
+  workflow_path: /home/d118/d118/andrio/pymdsetup/gpu_2mut_10ns
+  mdp_path: /home/d118/d118/andrio/pymdsetup/workflows/mdp/
+  gnuplot_path: gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/d118/d118/andrio/structure.pdb
+
+mug_pymdsetup:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/user/scwrl4/Scwrl4
+  workflow_path: /tmp/gpu_2mut_10ns
+  mdp_path: /home/user/pymdsetup/workflows/mdp/
+  gnuplot_path: /usr/bin/gnuplot
+  scwrl4_path: /home/user/scwrl4/Scwrl4
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/user/structure.pdb
+
+##############################################################################
+
+# List of coma separated mutations (if this field is empty
+# pdb_code field will be used to download the list).
+# Format example:  A.Lys58Glu, A.Thr74Ala
+input_mapped_mutations_list: A.Lys58Glu, A.Thr74Ala
+#input_mapped_mutations_list: A.Lys58Glu, A.Thr74Ala, A.Ser1Thr, A.Glu2Asp, A.Ala3Val, A.Glu4Asp, A.Asp5Glu, A.Ala6Val, A.Ser7Thr, A.Leu8Ile, A.Leu9Ile, A.Ser10Thr, A.Phe11Ile, A.Met12Leu, A.Gln13Arg, A.Gly14Ala, A.Tyr15Phe, A.Met16Leu, A.Lys17Arg, A.His18Asn, A.Ala19Ser, A.Thr20Ser, A.Lys21Arg, A.Thr22Ser, A.Ala23Ser, A.Lys24Arg, A.Asp25Glu, A.Ala26Ser, A.Leu27Ile, A.Ser28Ala, A.Ser29Ala, A.Val30Met
+
+# Max number of mutations
+# Available values None, Integer
+mutations_limit: 0
+
+########################## Step paths & properties ##########################
+# Step 1: mmbpdb -- Get PDB
+step1_mmbpdb:
+  paths:
+    output_pdb_path: structure.pdb
+  properties:
+    pdb_code: 2JQ3
+
+# Step3: scw -- Model mutation
+step3_scw:
+  paths:
+    input_pdb_path: dependency/step1_mmbpdb/output_pdb_path
+    output_pdb_path: mutated.pdb
+
+# Step4: p2g -- Create gromacs topology
+step4_p2g:
+  paths:
+    input_structure_pdb_path: dependency/step3_scw/output_pdb_path
+    output_gro_path: p2g.gro
+    output_top_zip_path: p2g_top.zip
+  properties:
+    output_top_path: p2g.top
+    output_itp_path: p2g.itp
+    # Available water molecule types: tip3p, spce, etc.
+    water_type: spce
+    # Available force fields: amber99sb-ildn, oplsaa, etc.
+    force_field: amber99sb-ildn
+    # Should be set to False in next release
+    ignh: True
+    mpirun: True
+    mpirun_np: 1
+
+# Step5: ec -- Define box dimensions
+step5_ec:
+  paths:
+    input_gro_path: dependency/step4_p2g/output_gro_path
+    output_gro_path: ec.gro
+  properties:
+    # Available box types: octahedron, cubic, etc.
+    box_type: cubic
+    # Distance of the box from the outermost atom in nm. ie 1.0nm = 10 Ångströms
+    distance_to_molecule: 1.0
+    center_molecule: True
+    mpirun: True
+    mpirun_np: 1
+
+# Step6: sol -- Fill the box with water molecules
+step6_sol:
+  paths:
+    input_solute_gro_path: dependency/step5_ec/output_gro_path
+    input_top_zip_path: dependency/step4_p2g/output_top_zip_path
+    output_gro_path: sol.gro
+    output_top_zip_path: sol_top.zip
+  properties:
+    output_top_path: sol.top
+    input_solvent_gro_path: spc216.gro
+    mpirun: True
+    mpirun_np: 1
+
+# Step7: gppions -- Preprocessing: Add ions to neutralice the charge
+step7_gppions:
+  paths:
+    input_gro_path: dependency/step6_sol/output_gro_path
+    input_top_zip_path: dependency/step6_sol/output_top_zip_path
+    output_tpr_path: gppions.tpr
+    input_mdp_path: gmx_full_ions.mdp
+  properties:
+    mpirun: True
+    mpirun_np: 1
+
+# Step8: gio -- Running: Add ions to neutralice the charge
+step8_gio:
+  paths:
+    input_tpr_path: dependency/step7_gppions/output_tpr_path
+    input_top_zip_path: dependency/step6_sol/output_top_zip_path
+    output_gro_path: gio.gro
+    output_top_zip_path: gio_top.zip
+  properties:
+    output_top_path: gio.top
+    neutral: True
+    # If neutral is True concentration value is not used
+    concentration: 0.05
+    replaced_group: SOL
+    seed: 1993
+    mpirun: True
+    mpirun_np: 1
+
+# Step9: gppmin -- Preprocessing: Energy minimization
+step9_gppmin:
+  paths:
+    input_gro_path: dependency/step8_gio/output_gro_path
+    input_top_zip_path: dependency/step8_gio/output_top_zip_path
+    output_tpr_path: gppmin.tpr
+    input_mdp_path: gmx_full_min.mdp
+  properties:
+    mpirun: True
+    mpirun_np: 1
+
+# Step10: mdmin -- Running: Energy minimization
+step10_mdmin:
+  paths:
+    input_tpr_path: dependency/step9_gppmin/output_tpr_path
+    output_trr_path: mdmin.trr
+    output_gro_path: mdmin.gro
+  properties:
+    output_xtc_path: mdmin.xtc
+    output_edr_path: mdmin.edr
+    mpirun: True
+
+# Step11: gppnvt -- Preprocessing: nvt constant number of molecules, volume and temp
+step11_gppnvt:
+  paths:
+    input_gro_path: dependency/step10_mdmin/output_gro_path
+    input_top_zip_path: dependency/step8_gio/output_top_zip_path
+    output_tpr_path: gppnvt.tpr
+    input_mdp_path: gmx_full_nvt.mdp
+  properties:
+    mpirun: True
+    mpirun_np: 1
+
+# Step12: mdnvt -- Running: nvt constant number of molecules, volume and temp
+step12_mdnvt:
+  paths:
+    input_tpr_path: dependency/step11_gppnvt/output_tpr_path
+    output_trr_path: mdnvt.trr
+    output_gro_path: mdnvt.gro
+    output_cpt_path: mdnvt.cpt
+  properties:
+    output_xtc_path: mdnvt.xtc
+    output_edr_path: mdnvt.edr
+    mpirun: True
+
+# Step13: gppnpt -- Preprocessing: npt constant number of molecules, pressure and temp
+step13_gppnpt:
+  paths:
+    input_gro_path: dependency/step12_mdnvt/output_gro_path
+    input_top_zip_path: dependency/step8_gio/output_top_zip_path
+    input_cpt_path: dependency/step12_mdnvt/output_cpt_path
+    output_tpr_path: npt.tpr
+    input_mdp_path: gmx_full_npt.mdp
+  properties:
+    mpirun: True
+    mpirun_np: 1
+
+# Step14: mdnpt -- Running: npt constant number of molecules, pressure and temp
+step14_mdnpt:
+  paths:
+    input_tpr_path: dependency/step13_gppnpt/output_tpr_path
+    output_trr_path: mdnpt.trr
+    output_gro_path: mdnpt.gro
+    output_cpt_path: mdnpt.cpt
+  properties:
+    output_edr_path: mdnpt.edr
+    output_xtc_path: mdnpt.xtc
+    mpirun: True
+
+# Step15: gppeq -- Preprocessing: 1ns Molecular dynamics Equilibration
+step15_gppeq:
+  paths:
+    input_gro_path: dependency/step14_mdnpt/output_gro_path
+    input_top_zip_path: dependency/step8_gio/output_top_zip_path
+    input_cpt_path: dependency/step14_mdnpt/output_cpt_path
+    output_tpr_path: gppeq.tpr
+    input_mdp_path: gmx_full_md.mdp
+  properties:
+    mpirun: True
+    mpirun_np: 1
+
+# Step16: mdeq -- Running: 1ns Molecular dynamics Equilibration
+step16_mdeq:
+  paths:
+    input_tpr_path: dependency/step15_gppeq/output_tpr_path
+    output_trr_path: mdeq.trr
+    output_gro_path: mdeq.gro
+  properties:
+    output_edr_path: mdeq.edr
+    output_xtc_path: mdeq.xtc
+    mpirun: True
+
+# Step17: rms -- Computing RMSD
+step17_rmsd:
+  paths:
+    input_gro_path: dependency/step8_gio/output_gro_path
+    input_trr_path: dependency/step16_mdeq/output_trr_path
+    output_xvg_path: rmsd.xvg
+  properties:
+    mpirun: True
+    mpirun_np: 1
+
+# Step18: gnuplot ----- Creating RMSD plot
+step18_gnuplot:
+  paths:
+    output_png_path: gplot.png
+  properties:
+    output_plotscript_path: gplot.plotscript

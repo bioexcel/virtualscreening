@@ -1,0 +1,8 @@
+#EDITCONF
+ec_script:
+    class: File
+    location: ../../gromacs_wrapper/editconf.py
+ec_input_gro_path:
+    class: File
+    location: ../../cwl/test/data/p2g.gro
+ec_output_gro_path: ec.gro

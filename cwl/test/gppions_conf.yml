@@ -1,0 +1,11 @@
+#GPPIONS
+gpp_input_mdp_path:
+    class: File
+    location: ../../workflows/mdp/gmx_full_ions_test.mdp
+gpp_input_gro_path:
+    class: File
+    location: ../../cwl/test/data/sol.gro
+gpp_input_top_zip_path:
+    class: File
+    location: ../../cwl/test/data/sol_top.zip
+gpp_output_tpr_path: gppions.tpr

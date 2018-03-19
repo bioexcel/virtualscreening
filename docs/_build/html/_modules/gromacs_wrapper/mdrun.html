@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gromacs_wrapper.mdrun &#8212; pymdsetup alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gromacs_wrapper.mdrun</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Python wrapper for the GROMACS mdrun module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">configuration.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">opj</span>
+<span class="kn">from</span> <span class="nn">command_wrapper</span> <span class="k">import</span> <span class="n">cmd_wrapper</span>
+<span class="kn">from</span> <span class="nn">tools</span> <span class="k">import</span> <span class="n">file_utils</span> <span class="k">as</span> <span class="n">fu</span>
+
+<div class="viewcode-block" id="Mdrun"><a class="viewcode-back" href="../../source.html#gromacs_wrapper.mdrun.Mdrun">[docs]</a><span class="k">class</span> <span class="nc">Mdrun</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for the 5.1.2 version of the mdrun module</span>
+<span class="sd">    Args:</span>
+<span class="sd">        input_tpr_path (str): Path to the portable binary run input file TPR.</span>
+<span class="sd">        output_trr_path (str): Path to the GROMACS uncompressed raw trajectory file TRR.</span>
+<span class="sd">        output_gro_path (str): Path to the output GROMACS structure GRO file.</span>
+<span class="sd">        properties (dic):</span>
+<span class="sd">            output_edr_path (str): Path to the output GROMACS portable energy file EDR.</span>
+<span class="sd">            output_xtc_path (str): Path to the GROMACS compressed trajectory file XTC.</span>
+<span class="sd">            num_threads (str): The number of threads that is going to be used.</span>
+<span class="sd">            gmx_path (str): Path to the GROMACS executable binary.</span>
+<span class="sd">        output_cpt_path (str): Path to the output GROMACS checkpoint file CPT.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_tpr_path</span><span class="p">,</span> <span class="n">output_trr_path</span><span class="p">,</span> <span class="n">output_gro_path</span><span class="p">,</span>
+                 <span class="n">properties</span><span class="p">,</span> <span class="n">output_cpt_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">properties</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_tpr_path</span> <span class="o">=</span> <span class="n">input_tpr_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_trr_path</span> <span class="o">=</span> <span class="n">output_trr_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_gro_path</span> <span class="o">=</span> <span class="n">output_gro_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_cpt_path</span> <span class="o">=</span> <span class="n">output_cpt_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_edr_path&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_xtc_path&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_threads</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_threads&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gmx_path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gmx_path&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mutation&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;step&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Mdrun.launch"><a class="viewcode-back" href="../../source.html#gromacs_wrapper.mdrun.Mdrun.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Launches the execution of the GROMACS mdrun module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out_log</span><span class="p">,</span> <span class="n">err_log</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">mutation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">gmx</span> <span class="o">=</span> <span class="s1">&#39;gmx&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gmx_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">gmx_path</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">gmx</span><span class="p">,</span> <span class="s1">&#39;mdrun&#39;</span><span class="p">,</span> <span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tpr_path</span><span class="p">,</span>
+               <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_trr_path</span><span class="p">,</span> <span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_gro_path</span><span class="p">,</span>
+               <span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;md.log&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-x&#39;</span><span class="p">)</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_xtc_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-e&#39;</span><span class="p">)</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_edr_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_cpt_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-cpo&#39;</span><span class="p">)</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_cpt_path</span><span class="p">)</span>
+        <span class="c1">#Number of threads to run (0 is guess)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_threads</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-nt&#39;</span><span class="p">)</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_threads</span><span class="p">))</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="n">cmd_wrapper</span><span class="o">.</span><span class="n">CmdWrapper</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">out_log</span><span class="p">,</span> <span class="n">err_log</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">command</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></div></div>
+
+<span class="c1">#Creating a main function to be compatible with CWL</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../gromacs_wrapper.html#gromacs_wrapper.mdrun.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">step</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">prop</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">step</span><span class="p">,</span> <span class="n">system</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">YamlReader</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">system</span><span class="p">)</span><span class="o">.</span><span class="n">get_prop_dic</span><span class="p">()[</span><span class="n">step</span><span class="p">]</span>
+    <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">Mdrun</span><span class="p">(</span><span class="n">input_tpr_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+          <span class="n">output_trr_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+          <span class="n">output_gro_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+          <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+          <span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">,</span>
+          <span class="n">output_cpt_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Bioexcel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

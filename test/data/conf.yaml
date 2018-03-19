@@ -1,0 +1,191 @@
+linux:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
+  workflow_path: /home/pau/projects/pymdsetup/testworkflow
+  gnuplot_path: /usr/bin/gnuplot
+  initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
+
+macos:
+  gmx_path: /usr/local/bin/gmx
+  scwrl4_path: /Users/pau/soft/scwrl4/Scwrl4
+  workflow_path: /Users/pau/projects/pymdsetup/testworkflow
+  gnuplot_path: /Users/pau/anaconda2/envs/pymdsetup/bin/gnuplot
+  initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
+
+virtualbox:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/compss/scwrl/scwrl4/Scwrl4/Scwrl4
+  workflow_path: /home/compss/pymdsetup/testworkflow
+  gnuplot_path: /usr/bin/gnuplot
+  initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
+
+open_nebula:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/user/scwrl4/Scwrl4
+  workflow_path: /home/user/pymdsetup/testworkflow
+  gnuplot_path: /usr/bin/gnuplot
+  initial_structure_pdb_path: /home/user/structure.pdb
+
+mare_nostrum:
+  gmx_path: /gpfs/home/bsc23/bsc23210/gromacs/bin/gmx
+  scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
+  workflow_path: /gpfs/home/bsc23/bsc23210/pymdsetup/testworkflow
+  gnuplot_path: gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /gpfs/home/bsc23/bsc23210/structure.pdb
+
+minotauro:
+  gmx_path: gmx_mpi
+  scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
+  workflow_path: /gpfs/home/bsc23/bsc23210/pymdsetup/testworkflow
+  gnuplot_path: /gpfs/apps/NVIDIA/GNUPLOT/4.6.3/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /gpfs/home/bsc23/bsc23210/structure.pdb
+
+pmes:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/pmes/scwrl4/Scwrl4
+  workflow_path: /home/pmes/pymdsetup/testworkflow
+  gnuplot_path: /usr/bin/gnuplot
+  initial_structure_pdb_path: /home/pmes/2jq3.pdb
+
+archer:
+  gmx_path: gmx
+  scwrl4_path: /home/d118/d118/andrio/scwrl/Scwrl4
+  workflow_path: /home/d118/d118/andrio/pymdsetup/testworkflow
+  gnuplot_path: gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/d118/d118/andrio/structure.pdb
+
+jureca:
+  gmx_path: gmx
+  scwrl4_path: /homea/ias-5/andrio/scwrl/Scwrl4
+  workflow_path: /homea/ias-5/andrio/pymdsetup/testworkflow
+  gnuplot_path: gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /homea/ias-5/andrio/pymdsetup/test/data/structure.pdb
+
+scwrl:
+  properties:
+    input_pdb_path: structure.pdb
+    output_pdb_path: mutated.pdb
+    mutation: A.Lys58Glu
+
+pdb2gmx:
+  properties:
+    output_top_path: p2g.top
+    output_itp_path: p2g.itp
+    # Available water molecule types: tip3p, spce, etc.
+    water_type: spce
+    # Available force fields: amber99sb-ildn, oplsaa, etc.
+    force_field: amber99sb-ildn
+    # Should be set to False in next release
+    ignh: True
+    input_structure_pdb_path: structure.pdb
+    output_gro_path: p2g.gro
+    output_top_zip_path: p2g_top.zip
+
+editconf:
+  paths:
+  properties:
+    input_gro_path: p2g.gro
+    output_gro_path: ec.gro
+    # Available box types: octahedron, cubic, etc.
+    box_type: cubic
+    # Distance of the box from the outermost atom in nm. ie 1.0nm = 10 Ångströms
+    distance_to_molecule: 1.0
+    center_molecule: True
+
+solvate:
+  properties:
+    input_solute_gro_path: ec.gro
+    output_gro_path: sol.gro
+    input_top_zip_path: p2g_top.zip
+    output_top_zip_path: sol_top.zip
+    output_top_path: sol.top
+    input_solvent_gro_path: spc216.gro
+
+grompp:
+  properties:
+    input_gro_path: sol.gro
+    input_top_zip_path: sol_top.zip
+    output_tpr_path: gppions.tpr
+    mdp:
+      # type: minimization, nvt, npt, free
+      type: minimization
+
+gromppmd:
+  properties:
+    input_gro_path: gppmd.gro
+    input_top_zip_path: gppmd.zip
+    output_tpr_path: gppmd.tpr
+    input_cpt_path: gppmd.cpt
+    mdp:
+      # type: minimization, nvt, npt, free
+      type: free
+      nsteps: 5000
+      nstlist: 20
+      tinit: 300
+      continuation: 'yes'
+
+
+
+genion:
+  properties:
+    input_tpr_path: gppions.tpr
+    input_top_zip_path: sol_top.zip
+    output_gro_path: gio.gro
+    output_top_zip_path: gio_top.zip
+    output_top_path: gio.top
+    neutral: True
+    # If neutral is True concentration value is not used
+    concentration: 0.05
+    replaced_group: SOL
+    seed: 1993
+
+gppmin:
+  properties:
+    input_gro_path: gio.gro
+    input_top_zip_path: gio_top.zip
+    output_tpr_path: gppmin.tpr
+    mdp:
+      # type: minimization, nvt, npt, free
+      type: minimization
+
+mdrun:
+  properties:
+    input_tpr_path: gppmin.tpr
+    output_trr_path: mdmin.trr
+    output_gro_path: mdmin.gro
+    output_xtc_path: mdmin.xtc
+    output_edr_path: mdmin.edr
+
+rms:
+  properties:
+    input_gro_path: gio.gro
+    input_trr_path: mdeq.trr
+    output_xvg_path: rmsd.xvg
+
+gnuplot:
+  properties:
+    output_png_path: gplot.png
+    output_plotscript_path: gplot.plotscript
+
+make_ndx:
+  properties:
+    input_structure_path: make_ndx.tpr
+    output_ndx_path: index.ndx
+    selection: "2 & chain A \n 2 & chain B \n 2 & chain C \n 2 & chain D \n name 10 Chain_A \n name 11 Chain_B \n name 12 Chain_C \n name 13 Chain_D \n 10 & !r 315 \n 10 & r 315 & a CA C N O \n 14 | 15 \n del 14 \n del 14 \n 11 & !r 315 \n 11 & r 315 & a CA C N O \n 15 | 16 \n del 15 \n del 15 \n 12 & !r 315 \n 12 & r 315 & a CA C N O \n 16 | 17  \n del 16 \n del 16 \n 13 & !r 315 \n 13 & r 315 & a CA C N O \n 17 | 18 \n del 17 \n del 17 \n name 14 Chain_A_noMut \n name 15 Chain_B_noMut \n name 16 Chain_C_noMut \n name 17 Chain_D_noMut \n 10 & a CA C N O \n 11 & a CA C N O \n 12 & a CA C N O \n 13 & a CA C N O \n name 18 Chain_A_backbone \n name 19 Chain_B_backbone \n name 20 Chain_C_backbone \n name 21 Chain_D_backbone \n q"
+
+genrestr:
+  properties:
+    input_structure_path: genrestr.gro
+    input_ndx_path: genrestr.ndx
+    input_top_zip_path: genrestr_top.zip
+    output_top_zip_path: genrestr_top_out.zip
+    force_constants: 500 500 500
+    restricted_group: chA_&_r_513

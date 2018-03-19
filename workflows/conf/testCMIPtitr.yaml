@@ -1,0 +1,50 @@
+######################## pymdsetup configuration file ########################
+
+########################## System dependent paths ############################
+linux:
+  CMIP_root: /home/pau/soft/CMIP
+  workflow_path: /home/pau/projects/pymdsetup/testworkflows
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path:
+
+# Step: mmbpdb -- Get PDB
+step1_mmbpdb:
+  paths:
+    output_pdb_path: structure.pdb
+    input_test_pdb_path: /home/pau/projects/pymdsetup/workflows/1kimh.pdb
+  properties:
+    pdb_code: 1kim
+
+# Step3: Prep PDB for CMIP
+step2_preppdbCMIP:
+  paths:
+    input_pdb_path: dependency/step1_mmbpdb/output_pdb_path
+    output_pdb_path: CMIPPrepared.pdb
+
+# Step3: CMIP titration
+step3_CMIPTitration:
+  paths:
+    input_pdb_path: dependency/step2_preppdbCMIP/output_pdb_path
+    output_pdb_path: CMIPTitrated.pdb
+  properties:
+    cmip:
+        tipcalc: 1
+        titration: 1
+        readgrid: 2
+        perfill: 0.7
+        int: [0.8,0.8,0.8]
+        focus: 1
+        inifoc: 2
+        cutfoc: -0.5
+        ninter: 10
+        dields: 2
+        clhost: 1
+        calcgrid: 1
+        irest: 0
+        orest: 0
+        coorfmt: 2
+        titwat: 20
+        titip: 10
+        titim: 10
+        titcut: 20

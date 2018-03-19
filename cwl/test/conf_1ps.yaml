@@ -1,0 +1,176 @@
+######################## pymdsetup configuration file ########################
+
+########################## System dependent paths ############################
+linux:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
+  workflow_path: /home/pau/projects/pymdsetup/test_2mut_1ps
+  mdp_path: /home/pau/projects/pymdsetup/workflows/mdp
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
+
+macos:
+  gmx_path: /usr/local/bin/gmx
+  scwrl4_path: /Users/pau/soft/scwrl4/Scwrl4
+  workflow_path: /Users/pau/projects/pymdsetup/test_2mut_1ps
+  mdp_path: /Users/pau/projects/pymdsetup/workflows/mdp
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /Users/pau/Desktop/structure.pdb
+
+virtualbox:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/compss/scwrl/scwrl4/Scwrl4/Scwrl4
+  workflow_path: /home/compss/pymdsetup/test_2mut_1ps
+  mdp_path: /home/compss/pymdsetup/workflows/mdp/
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/compss/structure.pdb
+
+open_nebula:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/user/scwrl4/Scwrl4
+  workflow_path: /home/user/pymdsetup/test_2mut_1ps
+  mdp_path: /home/user/pymdsetup/workflows/mdp/
+  gnuplot_path: /usr/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/user/structure.pdb
+
+mare_nostrum:
+  gmx_path: /gpfs/home/bsc23/bsc23210/gromacs/bin/gmx
+  scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
+  workflow_path: /gpfs/scratch/bsc23/bsc23210/test_2mut_1ps
+  mdp_path: /gpfs/home/bsc23/bsc23210/pymdsetup/workflows/mdp/
+  gnuplot_path: gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /gpfs/home/bsc23/bsc23210/structure.pdb
+
+minotauro:
+  gmx_path: /gpfs/home/bsc23/bsc23210/gromacs/bin/gmx
+  scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
+  workflow_path: /gpfs/home/bsc23/bsc23210/pymdsetup/test_2mut_1ps
+  mdp_path: /gpfs/home/bsc23/bsc23210/pymdsetup/workflows/mdp/
+  gnuplot_path: /gpfs/apps/NVIDIA/GNUPLOT/4.6.3/bin/gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  #   # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /gpfs/home/bsc23/bsc23210/structure.pdb
+
+archer:
+  gmx_path: gmx
+  scwrl4_path: /home/d118/d118/andrio/scwrl/Scwrl4
+  workflow_path: /home/d118/d118/andrio/pymdsetup/test_2mut_1ps
+  mdp_path: /home/d118/d118/andrio/pymdsetup/workflows/mdp/
+  gnuplot_path: gnuplot
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/d118/d118/andrio/structure.pdb
+
+mug_pymdsetup:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/user/scwrl4/Scwrl4
+  workflow_path: /tmp/test_2mut_1ps
+  mdp_path: /home/user/pymdsetup/workflows/mdp/
+  gnuplot_path: /usr/bin/gnuplot
+  scwrl4_path: /home/user/scwrl4/Scwrl4
+  # Path to the initial pdb structure (if this field is empty
+  # pdb_code field will be used to download the structure)
+  initial_structure_pdb_path: /home/user/structure.pdb
+
+pmes:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/pmes/scwrl4/Scwrl4
+  workflow_path: /home/pmes/pymdsetup/testworkflow
+  mdp_path: /home/pmes/pymdsetup/workflows/mdp
+  gnuplot_path: /usr/bin/gnuplot
+  initial_structure_pdb_path: /home/pmes/2jq3.pdb
+
+##############################################################################
+
+scwrl:
+  properties:
+    mut: A.Lys58Glu
+
+pdb2gmx:
+  properties:
+    output_top_path: p2g.top
+    output_itp_path: p2g.itp
+    # Available water molecule types: tip3p, spce, etc.
+    water_type: spce
+    # Available force fields: amber99sb-ildn, oplsaa, etc.
+    force_field: amber99sb-ildn
+    # Should be set to False in next release
+    ignh: True
+
+editconf:
+  properties:
+    # Available box types: octahedron, cubic, etc.
+    box_type: cubic
+    # Distance of the box from the outermost atom in nm. ie 1.0nm = 10 Ångströms
+    distance_to_molecule: 1.0
+    center_molecule: True
+
+solvate:
+  properties:
+    output_top_path: sol.top
+    input_solvent_gro_path: spc216.gro
+
+gppions:
+  properties:
+
+genion:
+  properties:
+    output_top_path: gio.top
+    neutral: True
+    # If neutral is True concentration value is not used
+    concentration: 0.05
+    replaced_group: SOL
+    seed: 1993
+
+gppmin:
+  properties:
+
+mdmin:
+  properties:
+    output_xtc_path: mdmin.xtc
+    output_edr_path: mdmin.edr
+    num_threads: 0
+
+gppnvt:
+  properties:
+
+mdnvt:
+  properties:
+    output_xtc_path: mdnvt.xtc
+    output_edr_path: mdnvt.edr
+    num_threads: 0
+
+gppnpt:
+  properties:
+
+mdnpt:
+  properties:
+    output_edr_path: mdnpt.edr
+    output_xtc_path: mdnpt.xtc
+    num_threads: 0
+
+gppeq:
+  properties:
+
+mdeq:
+  properties:
+    output_edr_path: mdeq.edr
+    output_xtc_path: mdeq.xtc
+    num_threads: 0
+
+rms:
+  properties:
+
+gnuplot:
+  properties:
+    output_plotscript_path: gplot.plotscript

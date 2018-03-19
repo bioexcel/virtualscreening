@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>workflows.gromacs_full &#8212; pymdsetup alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for workflows.gromacs_full</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">opj</span>
+<span class="kn">import</span> <span class="nn">tools.file_utils</span> <span class="k">as</span> <span class="nn">fu</span>
+<span class="kn">import</span> <span class="nn">configuration.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">gromacs_wrapper.pdb2gmx</span> <span class="k">as</span> <span class="nn">pdb2gmx</span>
+<span class="kn">import</span> <span class="nn">gromacs_wrapper.grompp</span> <span class="k">as</span> <span class="nn">grompp</span>
+<span class="kn">import</span> <span class="nn">scwrl_wrapper.scwrl</span> <span class="k">as</span> <span class="nn">scwrl</span>
+<span class="kn">import</span> <span class="nn">gromacs_wrapper.solvate</span> <span class="k">as</span> <span class="nn">solvate</span>
+<span class="kn">import</span> <span class="nn">gromacs_wrapper.editconf</span> <span class="k">as</span> <span class="nn">editconf</span>
+<span class="kn">import</span> <span class="nn">gromacs_wrapper.genion</span> <span class="k">as</span> <span class="nn">genion</span>
+<span class="kn">import</span> <span class="nn">gromacs_wrapper.mdrun</span> <span class="k">as</span> <span class="nn">mdrun</span>
+<span class="kn">import</span> <span class="nn">mmb_api.pdb</span> <span class="k">as</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">mmb_api.uniprot</span> <span class="k">as</span> <span class="nn">uniprot</span>
+<span class="kn">import</span> <span class="nn">gromacs_wrapper.rms</span> <span class="k">as</span> <span class="nn">rms</span>
+<span class="kn">import</span> <span class="nn">gnuplot_wrapper.gnuplot</span> <span class="k">as</span> <span class="nn">gnuplot</span>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../workflows.html#workflows.gromacs_full.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">yaml_path</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">system</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">YamlReader</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">,</span> <span class="n">system</span><span class="p">)</span>
+    <span class="n">workflow_path</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">system</span><span class="p">][</span><span class="s1">&#39;workflow_path&#39;</span><span class="p">]</span>
+    <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">workflow_path</span><span class="p">))</span>
+    <span class="n">out_log</span><span class="p">,</span> <span class="n">err_log</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">workflow_path</span><span class="p">,</span> <span class="n">console</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">paths_glob</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get_paths_dic</span><span class="p">()</span>
+    <span class="n">prop_glob</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get_prop_dic</span><span class="p">()</span>
+
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;_______GROMACS FULL WORKFLOW_______&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s1">&#39;step1:  mmbpdb -- Get PDB&#39;</span><span class="p">)</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">system</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;initial_structure_pdb_path&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">structure</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">structure</span><span class="p">):</span>
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s1">&#39;     Selected PDB code: &#39;</span> <span class="o">+</span> <span class="n">prop_glob</span><span class="p">[</span><span class="s1">&#39;step1_mmbpdb&#39;</span><span class="p">][</span><span class="s1">&#39;pdb_code&#39;</span><span class="p">])</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop_glob</span><span class="p">[</span><span class="s1">&#39;step1_mmbpdb&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">pdb</span><span class="o">.</span><span class="n">MmbPdb</span><span class="p">(</span><span class="n">prop_glob</span><span class="p">[</span><span class="s1">&#39;step1_mmbpdb&#39;</span><span class="p">][</span><span class="s1">&#39;pdb_code&#39;</span><span class="p">],</span> <span class="n">paths_glob</span><span class="p">[</span><span class="s1">&#39;step1_mmbpdb&#39;</span><span class="p">][</span><span class="s1">&#39;output_pdb_path&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">get_pdb</span><span class="p">()</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="n">paths_glob</span><span class="p">[</span><span class="s1">&#39;step1_mmbpdb&#39;</span><span class="p">][</span><span class="s1">&#39;output_pdb_path&#39;</span><span class="p">]</span>
+
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s1">&#39;step2:  mmbuniprot -- Get mutations&#39;</span><span class="p">)</span>
+    <span class="n">mutations</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;input_mapped_mutations_list&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mutations</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">mutations</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="n">mmbuniprot</span> <span class="o">=</span> <span class="n">uniprot</span><span class="o">.</span><span class="n">MmbVariants</span><span class="p">(</span><span class="n">prop_glob</span><span class="p">[</span><span class="s1">&#39;step1_mmbpdb&#39;</span><span class="p">][</span><span class="s1">&#39;pdb_code&#39;</span><span class="p">])</span>
+        <span class="n">mutations</span> <span class="o">=</span> <span class="n">mmbuniprot</span><span class="o">.</span><span class="n">get_pdb_variants</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mutations</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">mutations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mutations</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;input_mapped_mutations_list&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+
+    <span class="n">mutations_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mutations</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">prop_glob</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mutations_limit&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mutations</span><span class="p">))))</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Number of mutations to be modelled: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mutations_limit</span><span class="p">))</span>
+
+    <span class="n">rms_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">mutations_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">mut</span> <span class="ow">in</span> <span class="n">mutations</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mutations_counter</span> <span class="o">==</span> <span class="n">mutations_limit</span><span class="p">:</span> <span class="k">break</span>
+        <span class="n">mutations_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get_paths_dic</span><span class="p">(</span><span class="n">mut</span><span class="p">)</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get_prop_dic</span><span class="p">(</span><span class="n">mut</span><span class="p">)</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------------------------&#39;</span><span class="p">)</span>
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mutations_counter</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mutations_limit</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">mut</span><span class="p">)</span>
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------------------------&#39;</span><span class="p">)</span>
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step3:  scw ------ Model mutation&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step3_scw&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step3_scw&#39;</span><span class="p">][</span><span class="s1">&#39;input_pdb_path&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">structure</span>
+        <span class="n">scwrl</span><span class="o">.</span><span class="n">Scwrl4</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step3_scw&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step3_scw&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step4:  p2g ------ Create gromacs topology&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step4_p2g&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">pdb2gmx</span><span class="o">.</span><span class="n">Pdb2gmx</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step4_p2g&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step4_p2g&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step5:  ec ------- Define box dimensions&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step5_ec&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">editconf</span><span class="o">.</span><span class="n">Editconf</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step5_ec&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step5_ec&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step6:  sol ------ Fill the box with water molecules&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step6_sol&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">solvate</span><span class="o">.</span><span class="n">Solvate</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step6_sol&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step6_sol&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step7:  gppions -- Preprocessing: Add ions to neutralice the charge&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step7_gppions&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">grompp</span><span class="o">.</span><span class="n">Grompp</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step7_gppions&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step7_gppions&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step8:  gio ------ Running: Add ions to neutralice the charge&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step8_gio&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">genion</span><span class="o">.</span><span class="n">Genion</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step8_gio&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step8_gio&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step9:  gppmin --- Preprocessing: Energy minimization&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step9_gppmin&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">grompp</span><span class="o">.</span><span class="n">Grompp</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step9_gppmin&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step9_gppmin&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step10: mdmin ---- Running: Energy minimization&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step10_mdmin&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">mdrun</span><span class="o">.</span><span class="n">Mdrun</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step10_mdmin&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step10_mdmin&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step11: gppnvt --- Preprocessing: nvt constant number of molecules, volume and temp&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step11_gppnvt&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">grompp</span><span class="o">.</span><span class="n">Grompp</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step11_gppnvt&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step11_gppnvt&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step12: mdnvt ---- Running: nvt constant number of molecules, volume and temp&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step12_mdnvt&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">mdrun</span><span class="o">.</span><span class="n">Mdrun</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step12_mdnvt&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step12_mdnvt&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step13: gppnpt --- Preprocessing: npt constant number of molecules, pressure and temp&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step13_gppnpt&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">grompp</span><span class="o">.</span><span class="n">Grompp</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step13_gppnpt&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step13_gppnpt&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step14: mdnpt ---- Running: npt constant number of molecules, pressure and temp&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step14_mdnpt&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">mdrun</span><span class="o">.</span><span class="n">Mdrun</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step14_mdnpt&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step14_mdnpt&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step15: gppeq ---- Preprocessing: 1ns Molecular dynamics Equilibration&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step15_gppeq&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">grompp</span><span class="o">.</span><span class="n">Grompp</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step15_gppeq&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step15_gppeq&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step16: mdeq ----- Running: 1ns Molecular dynamics Equilibration&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step16_mdeq&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">mdrun</span><span class="o">.</span><span class="n">Mdrun</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step16_mdeq&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step16_mdeq&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step17: rmsd ----- Computing RMSD&#39;</span><span class="p">)</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step17_rmsd&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">rms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rms</span><span class="o">.</span><span class="n">Rms</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;step17_rmsd&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths</span><span class="p">[</span><span class="s1">&#39;step17_rmsd&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">xvg_dict</span><span class="o">=</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">),</span> <span class="n">rms_list</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;step18: gnuplot ----- Creating RMSD plot&#39;</span><span class="p">)</span>
+    <span class="n">fu</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">prop_glob</span><span class="p">[</span><span class="s1">&#39;step18_gnuplot&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+    <span class="n">gnuplot</span><span class="o">.</span><span class="n">Gnuplot</span><span class="p">(</span><span class="n">input_xvg_path_dict</span><span class="o">=</span><span class="n">xvg_dict</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">prop_glob</span><span class="p">[</span><span class="s1">&#39;step18_gnuplot&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">paths_glob</span><span class="p">[</span><span class="s1">&#39;step18_gnuplot&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+    <span class="n">removed_list</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">remove_temp_files</span><span class="p">([</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;.top&#39;</span><span class="p">,</span> <span class="s1">&#39;.plotscript&#39;</span><span class="p">,</span> <span class="s1">&#39;.edr&#39;</span><span class="p">,</span> <span class="s1">&#39;.xtc&#39;</span><span class="p">,</span> <span class="s1">&#39;.itp&#39;</span><span class="p">,</span> <span class="s1">&#39;.top&#39;</span><span class="p">,</span> <span class="s1">&#39;.log&#39;</span><span class="p">,</span> <span class="s1">&#39;.pdb&#39;</span><span class="p">,</span> <span class="s1">&#39;.cpt&#39;</span><span class="p">,</span> <span class="s1">&#39;.mdp&#39;</span><span class="p">])</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Removing unwanted files: &#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">removed_file</span> <span class="ow">in</span> <span class="n">removed_list</span><span class="p">:</span>
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    X    &#39;</span> <span class="o">+</span> <span class="n">removed_file</span><span class="p">)</span>
+
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Execution sucessful: &#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Workflow_path: &#39;</span><span class="o">+</span><span class="n">workflow_path</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Config File: &#39;</span><span class="o">+</span><span class="n">yaml_path</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  System: &#39;</span><span class="o">+</span><span class="n">system</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Nodes: &#39;</span><span class="o">+</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Elapsed time: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; seconds&#39;</span><span class="p">)</span>
+    <span class="n">out_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Bioexcel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gromacs_wrapper.pdb2gmx &#8212; pymdsetup alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gromacs_wrapper.pdb2gmx</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Python wrapper module for the GROMACS pdb2gmx module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">configuration.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">from</span> <span class="nn">command_wrapper</span> <span class="k">import</span> <span class="n">cmd_wrapper</span>
+<span class="kn">from</span> <span class="nn">tools</span> <span class="k">import</span> <span class="n">file_utils</span> <span class="k">as</span> <span class="n">fu</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">opj</span>
+
+<div class="viewcode-block" id="Pdb2gmx"><a class="viewcode-back" href="../../source.html#gromacs_wrapper.pdb2gmx.Pdb2gmx">[docs]</a><span class="k">class</span> <span class="nc">Pdb2gmx</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper class for the 5.1.2 version of the GROMACS pdb2gmx module.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        input_structure_pdb_path (str): Path to the input PDB file.</span>
+<span class="sd">        output_gro_path (str): Path to the output GRO file.</span>
+<span class="sd">        output_top_tar_path (str): Path the output TOP topology in TAR format.</span>
+<span class="sd">        properties (dic):</span>
+<span class="sd">            output_top_path (str): Path the output TOP file.</span>
+<span class="sd">            output_itp_path (str): Path the output itp file.</span>
+<span class="sd">            water_type (str): Water molecule type.</span>
+<span class="sd">                Valid values: tip3p, spce, etc.</span>
+<span class="sd">            force_field (str): Force field to be used during the conversion.</span>
+<span class="sd">                Valid values: amber99sb-ildn, oplsaa, etc.</span>
+<span class="sd">            ignh (bool): Should pdb2gmx ignore the hidrogens in the original</span>
+<span class="sd">                structure.</span>
+<span class="sd">            gmx_path (str): Path to the GROMACS executable binary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_structure_pdb_path</span><span class="p">,</span> <span class="n">output_gro_path</span><span class="p">,</span>
+                 <span class="n">output_top_tar_path</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">properties</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_structure_pdb_path</span> <span class="o">=</span> <span class="n">input_structure_pdb_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_gro_path</span> <span class="o">=</span> <span class="n">output_gro_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_top_tar_path</span> <span class="o">=</span> <span class="n">output_top_tar_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_top_path&#39;</span><span class="p">,</span><span class="s1">&#39;p2g.top&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_itp_path&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">water_type</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;water_type&#39;</span><span class="p">,</span><span class="s1">&#39;spce&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_field</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;force_field&#39;</span><span class="p">,</span><span class="s1">&#39;amber99sb-ildn&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignh</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ignh&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gmx_path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gmx_path&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mutation&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;step&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Pdb2gmx.launch"><a class="viewcode-back" href="../../source.html#gromacs_wrapper.pdb2gmx.Pdb2gmx.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Launches the execution of the GROMACS pdb2gmx module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out_log</span><span class="p">,</span> <span class="n">err_log</span> <span class="o">=</span> <span class="n">fu</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">mutation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span>
+
+        <span class="n">gmx</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gmx_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">gmx_path</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">gmx</span><span class="p">,</span> <span class="s2">&quot;pdb2gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_structure_pdb_path</span><span class="p">,</span>
+               <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_gro_path</span><span class="p">,</span> <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span><span class="p">,</span>
+               <span class="s2">&quot;-water&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">water_type</span><span class="p">,</span> <span class="s2">&quot;-ff&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_field</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-i&quot;</span><span class="p">)</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_itp_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignh</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-ignh&quot;</span><span class="p">)</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="n">cmd_wrapper</span><span class="o">.</span><span class="n">CmdWrapper</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">out_log</span><span class="p">,</span> <span class="n">err_log</span><span class="p">)</span>
+        <span class="n">returncode</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+
+        <span class="c1">#Remove comment (first line) from gro file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_gro_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Created with pdb2gmx building block</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_gro_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Tar topology</span>
+        <span class="n">fu</span><span class="o">.</span><span class="n">tar_top</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_top_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_top_tar_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">returncode</span></div></div>
+<span class="c1">#Creating a main function to be compatible with CWL</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../gromacs_wrapper.html#gromacs_wrapper.pdb2gmx.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">step</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">prop</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">step</span><span class="p">,</span> <span class="n">system</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">YamlReader</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">system</span><span class="p">)</span><span class="o">.</span><span class="n">get_prop_dic</span><span class="p">()[</span><span class="n">step</span><span class="p">]</span>
+    <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">Pdb2gmx</span><span class="p">(</span><span class="n">input_structure_pdb_path</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">output_gro_path</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="n">output_top_tar_path</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+            <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+            <span class="n">properties</span><span class="o">=</span><span class="n">prop</span><span class="p">)</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Bioexcel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

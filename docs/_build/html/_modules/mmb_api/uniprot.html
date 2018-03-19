@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmb_api.uniprot &#8212; pymdsetup alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for mmb_api.uniprot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Mutation fetcher module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+
+<div class="viewcode-block" id="MmbVariants"><a class="viewcode-back" href="../../source.html#mmb_api.uniprot.MmbVariants">[docs]</a><span class="k">class</span> <span class="nc">MmbVariants</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper class for the MMB group UNIPROT REST API.</span>
+<span class="sd">    This class is a wrapper for the UNIPROT (http://www.uniprot.org/)</span>
+<span class="sd">    mirror of the MMB group REST API (http://mmb.irbbarcelona.org/api/)</span>
+<span class="sd">    Args:</span>
+<span class="sd">        pdb_code (str): Protein Data Bank (PDB) four letter code.</span>
+<span class="sd">            ie: &#39;2ki5&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdb_code</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pdb_code</span> <span class="o">=</span> <span class="n">pdb_code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_uniprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_uniprot</span><span class="p">()</span>
+<div class="viewcode-block" id="MmbVariants.get_uniprot"><a class="viewcode-back" href="../../source.html#mmb_api.uniprot.MmbVariants.get_uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">get_uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the UNIPROT code corresponding to the `self._pdb_code`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: UNIPROT code.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url_uniprot_id</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;http://mmb.irbbarcelona.org&quot;</span>
+                          <span class="s2">&quot;/api/pdb/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_pdb_code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;/entry&quot;</span>
+                          <span class="s2">&quot;/uniprotRefs/_id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_uniprot_id</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;uniprotRefs._id&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MmbVariants.get_variants"><a class="viewcode-back" href="../../source.html#mmb_api.uniprot.MmbVariants.get_variants">[docs]</a>    <span class="k">def</span> <span class="nf">get_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the variants of the `self._uniprot` code.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`list` of :obj:`str`: List of variants</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url_uniprot_mut</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;http://mmb.irbbarcelona.org&quot;</span>
+                           <span class="s2">&quot;/api/uniprot/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_uniprot</span><span class="o">+</span><span class="s2">&quot;/entry&quot;</span>
+                           <span class="s2">&quot;/variants/vardata/mut/?varorig=humsavar&quot;</span><span class="p">)</span>
+        <span class="n">variants</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_uniprot_mut</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;variants.vardata.mut&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">variants</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">variants</span></div>
+
+<div class="viewcode-block" id="MmbVariants.get_pdb_variants"><a class="viewcode-back" href="../../source.html#mmb_api.uniprot.MmbVariants.get_pdb_variants">[docs]</a>    <span class="k">def</span> <span class="nf">get_pdb_variants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the variants of the `self._uniprot` mapped to the</span>
+<span class="sd">           `self_pdb`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`list` of :obj:`str`: List of mapped variants</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url_mapPDBRes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;http://mmb.irbbarcelona.org/api/&quot;</span>
+                         <span class="s2">&quot;uniprot/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_uniprot</span><span class="o">+</span><span class="s2">&quot;/mapPDBRes?pdbId=&quot;</span>
+                         <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pdb_code</span><span class="p">)</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">((</span><span class="s2">&quot;p.(?P&lt;wt&gt;[a-zA-Z]</span><span class="si">{3}</span><span class="s2">)&quot;</span>
+                              <span class="s2">&quot;(?P&lt;resnum&gt;\d+)(?P&lt;mt&gt;[a-zA-Z]</span><span class="si">{3}</span><span class="s2">)&quot;</span><span class="p">))</span>
+
+        <span class="n">unfiltered_dic</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_mapPDBRes</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unfiltered_dic</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">mapdic</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_mapPDBRes</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">mutations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">uniprot_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variants</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">uniprot_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">uniprot_var</span><span class="p">:</span>
+            <span class="c1"># print &quot;VAR: &quot; + var</span>
+            <span class="n">uni_mut</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mapdic</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">fragment</span> <span class="ow">in</span> <span class="n">mapdic</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;unp_start&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">uni_mut</span><span class="p">[</span><span class="s1">&#39;resnum&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;unp_end&#39;</span><span class="p">]):</span>
+                        <span class="n">resnum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">uni_mut</span><span class="p">[</span><span class="s1">&#39;resnum&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;pdb_start&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">fragment</span><span class="p">[</span><span class="s1">&#39;unp_start&#39;</span><span class="p">])</span>
+                        <span class="n">mutations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">uni_mut</span><span class="p">[</span><span class="s1">&#39;wt&#39;</span><span class="p">]</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">resnum</span><span class="p">)</span><span class="o">+</span><span class="n">uni_mut</span><span class="p">[</span><span class="s1">&#39;mt&#39;</span><span class="p">])</span>
+                        <span class="c1"># print str(fragment) + &quot;&lt;====== ACCEPTED&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                        <span class="c1"># print str(fragment) + &quot;&lt;====== DENIED&quot;</span>
+        <span class="k">return</span> <span class="n">mutations</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Bioexcel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
