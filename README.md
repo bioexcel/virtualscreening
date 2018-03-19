@@ -32,7 +32,7 @@ https://www.anaconda.com/
 2. On the disconnected computer:
 
     ```bash
-    bash Anaconda2-5.0.0-Linux-x86_64.sh
+    bash Anaconda2-5.1.0-Linux-x86_64.sh
     source .bashrc
     mv biopython-1.69-np113py27_0.tar.bz2 nose-1.3.7-py27_1.tar.bz2 ~/anaconda2/pkgs/
     
