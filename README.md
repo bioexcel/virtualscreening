@@ -35,7 +35,6 @@ https://www.anaconda.com/
     bash Anaconda2-5.1.0-Linux-x86_64.sh
     source .bashrc
     mv biopython-1.69-np113py27_0.tar.bz2 nose-1.3.7-py27_1.tar.bz2 ~/anaconda2/pkgs/
-    
     conda create -n vsenv python=2.7
     source activate vsenv
     conda install --use-index-cache --use-local --offline  numpy pyyaml requests nose
