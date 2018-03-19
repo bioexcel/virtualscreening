@@ -25,7 +25,7 @@ https://www.anaconda.com/
 
     ```bash
     git clone https://github.com/bioexcel/virtualscreening.git
-    wget https://repo.continuum.io/archive/Anaconda2-5.0.0-Linux-x86_64.sh
+    wget https://repo.continuum.io/archive/Anaconda2-5.1.0-Linux-x86_64.sh
     wget https://repo.continuum.io/pkgs/free/linux-64/biopython-1.69-np113py27_0.tar.bz2
     ```
 
