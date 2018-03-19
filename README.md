@@ -1,4 +1,3 @@
-
 # VirtualScreening
 
 ### Introduction
@@ -18,7 +17,33 @@ Linux (http://www.gnuplot.info/)
 4. PyCOMPSs (optional just for parallel executions): Python library for parallel computing.
 (https://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/programming-model/python)
 
-### Online Installation
+### Offline Installation: Using Anaconda
+https://www.anaconda.com/  
+(Assuming that you already installed GROMACS, SCWRL4 and GNUPLOT)
+
+1. On your local connected computer, download Pymdsetup, Anaconda and the Biopython Anaconda package and copy them to the offline computer:
+
+    ```bash
+    git clone https://github.com/bioexcel/virtualscreening.git
+    wget https://repo.continuum.io/archive/Anaconda2-5.0.0-Linux-x86_64.sh
+    wget https://repo.continuum.io/pkgs/free/linux-64/biopython-1.69-np113py27_0.tar.bz2
+
+    ```
+
+2. On the disconnected computer:
+
+    ```bash
+    bash Anaconda2-5.0.0-Linux-x86_64.sh
+    source .bashrc
+    mv biopython-1.69-np113py27_0.tar.bz2 anaconda2/pkgs/
+    conda create -n vsenv python=2.7
+    source activate vsenv
+    conda install anaconda2/pkgs/biopython-1.69-np113py27_0.tar.bz2
+    conda install --use-index-cache --offline --use-local  numpy pyyaml requests nose
+    echo "~/virtualscreening" > ~/anaconda2/envs/vsenv/lib/python2.7/site-packages/virtualscreening.pth
+    ```
+
+### Online Installation: Using APT and PIP
 
 (We are assuming that you are installing VirtualScreening in your home directory `cd ~`)
 
