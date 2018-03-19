@@ -38,7 +38,7 @@ https://www.anaconda.com/
     
     conda create -n vsenv python=2.7
     source activate vsenv
-    conda install --use-index-cache --use-local  numpy pyyaml requests nose
+    conda install --use-index-cache --use-local --offline  numpy pyyaml requests nose
     conda install ~/anaconda2/pkgs/biopython-1.69-np113py27_0.tar.bz2
     echo "~/virtualscreening" > ~/anaconda2/envs/vsenv/lib/python2.7/site-packages/virtualscreening.pth
     ```
