@@ -11,7 +11,8 @@ import configuration.settings as settings
 from command_wrapper import cmd_wrapper
 from tools import file_utils as fu
 
-class AutodockVina(object):
+
+class AutoDockVina(object):
     """Wrapper class for AutoDock Vina software.
     Args:
         input_pdb_path (str): Path to the input PDB file.
@@ -107,7 +108,7 @@ def main():
     step=sys.argv[2]
     properties_file=sys.argv[3]
     prop = settings.YamlReader(properties_file, system).get_prop_dic()[step]
-    Scwrl4(input_pdb_path=sys.argv[4], output_pdb_path=sys.argv[5], properties=prop).launch()
+    AutoDockVina(input_pdb_path=sys.argv[4], output_pdb_path=sys.argv[5], properties=prop).launch()
 
 if __name__ == '__main__':
     main()
