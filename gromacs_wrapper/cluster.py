@@ -28,7 +28,7 @@ class Cluster(object):
         if isinstance(properties, basestring):
             properties=json.loads(properties)
         self.input_gro_path = input_gro_path
-        self.input_trr_path = input_trr_path
+        self.input_xtc_path = input_xtc_path
         self.output_pdb_path = output_pdb_path
         self.gmx_path = properties.get('gmx_path',None)
         self.mutation = properties.get('mutation',None)
@@ -49,8 +49,8 @@ class Cluster(object):
 
         cmd = [gmx, 'rms', '-xvg', 'none',
                '-s', self.input_gro_path,
-               '-f', self.input_trr_path,
-               '-o', self.output_xvg_path]
+               '-f', self.input_xtc_path,
+               '-o', self.output_pdb_path]
 
         if self.mpirun_np is not None:
             cmd.insert(0, str(self.mpirun_np))

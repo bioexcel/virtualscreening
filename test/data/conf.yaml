@@ -6,13 +6,8 @@ linux:
   initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
 
 linux-laia:
-  gmx_path: /usr/local/gromacs/bin/gmx
-  scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
   workflow_path: /tmp/tests
-  gnuplot_path: /usr/bin/gnuplot
-  initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
-
-
+  
 macos:
   gmx_path: /usr/local/bin/gmx
   scwrl4_path: /Users/pau/soft/scwrl4/Scwrl4
@@ -203,7 +198,7 @@ bindingsite:
     clusterPDBs_zip_path: 2GS2_A_cluster.tar.gz
     input_pdb_path: 2GS2_A.pdb
     output_pdb_path: bindingSitetest.pdb
-    clusterPDBs_path: .
+    clusterPDBs_path:
     matrix: blosum62
     gap_open: -10.0
     gap_extend: -0.5

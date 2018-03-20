@@ -19,9 +19,9 @@ from Bio.Data.SCOPData import protein_letters_3to1 as prot_one_letter
 class BindingSite(object):
     """Finds the binding site of a PDB file based on the ligands' location of the PDB cluster90 members
     Args:
-        structure_path (str): Path to the PDB protein structure.
+        input_pdb_path (str): Path to the PDB protein structure.
         clusterPDBs_zip_path (str): Path to the TAR file containing the PDBs of cluster90 members.
-        bindingsite_path (str): Path to the PDB containig the residues belonging to the binding site
+        output_pdb_path (str): Path to the PDB containig the residues belonging to the binding site
         properties (dic):
             clusterPDBs_path (str): Path the uncompressed file containing the PDBs of cluster90 members
 	    matrix (str): Substitution matrices for use in alignments. Available matrices are: 'benner6', 'benner22', 'benner74', 'blosum100', 'blosum30', 'blosum35', 'blosum40', 'blosum45', 'blosum50', 'blosum55', 'blosum60', 'blosum62', 'blosum65', 'blosum70', 'blosum75', 'blosum80', 'blosum85', 'blosum90', 'blosum95', 'feng', 'fitch', 'genetic', 'gonnet', 'grant', 'ident', 'johnson', 'levin', 'mclach', 'miyata', 'nwsgappep', 'pam120', 'pam180', 'pam250', 'pam30', 'pam300', 'pam60', 'pam90', 'rao', 'risler', 'structure'
@@ -30,14 +30,14 @@ class BindingSite(object):
 	    trim_ends (boolean): Cut unaligned sequence ends
     """
 
-    def __init__(self, structure_path, clusterPDBs_zip_path, bindingsite_path, properties, **kwargs):
+    def __init__(self, input_pdb_path, clusterPDBs_zip_path, output_pdb_path, properties, **kwargs):
         if isinstance(properties, basestring):
             properties=json.loads(properties)
 	#inputs
-        self.structure_path       = structure_path
+        self.input_pdb_path       = input_pdb_path
         self.clusterPDBs_zip_path = clusterPDBs_zip_path
 	#outputs
-        self.bindingsite_path     = bindingsite_path
+        self.output_pdb_path     = output_pdb_path
 	# path tmp files
         self.clusterPDBs_path     = properties.get('clusterPDBs_path','tmp/cluster')
 	# options pairwise align
@@ -53,27 +53,27 @@ class BindingSite(object):
         """
 	#out_log, err_log = fu.get_logs(path=self.path, mutation=self.mutation, step=self.step)
 
-	##	
+	##
 	## Loading and parsing reference PDB structure
-	print "\nParsing input PDB structure %s..." % self.structure_path
+	print "\nParsing input PDB structure %s..." % self.input_pdb_path
 
 	structPDB      = {}
 
-	if os.path.isfile(self.structure_path):
+	if os.path.isfile(self.input_pdb_path):
 	    parser         = Bio.PDB.PDBParser()
-	    structure_name = os.path.basename(self.structure_path.split('.')[0])
-	    structPDB      = parser.get_structure(structure_name,self.structure_path)[0]
+	    structure_name = os.path.basename(self.input_pdb_path.split('.')[0])
+	    structPDB      = parser.get_structure(structure_name,self.input_pdb_path)[0]
 	else:
-	    raise Exception('Input file "structure_path" {1} is not a file'.format(self.structure_path))
+	    raise Exception('Input file "input_pdb_path" {1} is not a file'.format(self.input_pdb_path))
 
 	# Use only the fist chain
 	n_chains = structPDB.get_list()
 	if len(n_chains) != 1:
-	    warnings.warn('More than one chain found in "structure_path". Using only first chain to find the binding site')
+	    warnings.warn('More than one chain found in "input_pdb_path". Using only first chain to find the binding site')
 
 	for struct_chain in structPDB.get_chains():
 	    structPDB = struct_chain
-	
+
 	# Get AA sequence
 	structPDB_seq   = self.__get_pdb_sequence(structPDB)
 
@@ -89,8 +89,8 @@ class BindingSite(object):
 	#        #do not append hets
 	#	pass
 
-	#if len(struct_atoms)==0:	
-	#    raise Exception('Cannot find CA atoms (first chain, first model) for "structure_path" {1}. Cannot find binding site in a empty selection.'.format(self.structure_path))
+	#if len(struct_atoms)==0:
+	#    raise Exception('Cannot find CA atoms (first chain, first model) for "input_pdb_path" {1}. Cannot find binding site in a empty selection.'.format(self.input_pdb_path))
 	#else:
 	#   print "    Found %s protein residues" % len(struct_atoms)
 
@@ -123,7 +123,7 @@ class BindingSite(object):
 		# Use only the fist chain
 		for cluster_chain in clusterPDB.get_chains():
 		    clusterPDB = cluster_chain
-	
+
 		# Get AA sequence
 		clusterPDB_seq = self.__get_pdb_sequence(clusterPDB)
 
@@ -155,7 +155,7 @@ class BindingSite(object):
 		    cluster_atoms.append(clusterPDB[residue_map[struct_res]]['CA'])
 
 		if len(cluster_atoms)==0:
-		    raise Exception('Cannot find CA atoms (1st model, 1st chain) matching "structure_path" {1} with the cluster member {2}. Ignoring this member.'.format(self.structure_path,filename))
+		    raise Exception('Cannot find CA atoms (1st model, 1st chain) matching "input_pdb_path" {1} with the cluster member {2}. Ignoring this member.'.format(self.input_pdb_path,filename))
 		else:
 		    print "    Found %s aligned protein residues" % len(cluster_atoms)
 
@@ -186,7 +186,7 @@ class BindingSite(object):
 		print "    Writting transformed cluster member into %s" % clusterPDB_aligned_path
 		io.save(clusterPDB_aligned_path)
 
-	
+
     def __get_pdb_sequence(seft, structure):
         """
         Retrieves the AA sequence from a PDB structure.
@@ -271,7 +271,7 @@ class BindingSite(object):
 
 	# extract all TAR files
 	tar.extractall(path=dest_dir)
-	tar.close() 
+	tar.close()
 
 
 #Creating a main function to be compatible with CWL
@@ -281,9 +281,9 @@ def main():
     properties_file= sys.argv[3]
     prop           = settings.YamlReader(properties_file, system).get_prop_dic()[step]
 
-    BindingSite(structure_path       = sys.argv[4],
+    BindingSite(input_pdb_path       = sys.argv[4],
                 clusterPDBs_zip_path = sys.argv[5],
-                bindingsite_path     = sys.argv[6],
+                output_pdb_path     = sys.argv[6],
                 properties           = prop        ).launch()
 
 
