@@ -94,6 +94,12 @@ And follow the SCWRL4 interactive installation instructions.
     echo "source /usr/local/gromacs/bin/GMXRC" >> ~/.bashrc
     ```
 
+6. Install Autodock-vina:
+
+    ```bash
+    sudo apt-get install autodock autodock-vina autodocktools autogrid
+    ```
+
 ### Copyright & Licensing
 This software has been developed in the MMB group (http://mmb.pcb.ub.es) at the
 BSC (http://www.bsc.es/) & IRB (https://www.irbbarcelona.org/) for the European BioExcel (http://bioexcel.eu/), funded by the European Commission
