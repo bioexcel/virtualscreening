@@ -5,6 +5,14 @@ linux:
   gnuplot_path: /usr/bin/gnuplot
   initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
 
+linux-laia:
+  gmx_path: /usr/local/gromacs/bin/gmx
+  scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
+  workflow_path: /tmp/tests
+  gnuplot_path: /usr/bin/gnuplot
+  initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
+
+
 macos:
   gmx_path: /usr/local/bin/gmx
   scwrl4_path: /Users/pau/soft/scwrl4/Scwrl4
@@ -189,3 +197,14 @@ genrestr:
     output_top_zip_path: genrestr_top_out.zip
     force_constants: 500 500 500
     restricted_group: chA_&_r_513
+
+bindingsite:
+  properties:
+    clusterPDBs_zip_path: 2GS2_A_cluster.tar.gz
+    input_pdb_path: 2GS2_A.pdb
+    output_pdb_path: bindingSitetest.pdb
+    clusterPDBs_path: .
+    matrix: blosum62
+    gap_open: -10.0
+    gap_extend: -0.5
+    trim_ends: True
