@@ -16,6 +16,7 @@ VirtualScreening protocol uses the following applications:
 Linux (http://www.gnuplot.info/)
 4. PyCOMPSs (optional just for parallel executions): Python library for parallel computing.
 (https://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/programming-model/python)
+5. ACPYPE (optional) and AMBERTOOLS
 
 ### Offline Installation: Using Anaconda
 https://www.anaconda.com/  
@@ -99,6 +100,15 @@ And follow the SCWRL4 interactive installation instructions.
     ```bash
     sudo apt-get install autodock autodock-vina autodocktools autogrid
     ```
+
+7. Install AMBERTOOLS:
+
+    ```bash
+    wget http://ambermd.org/downloads/install_ambertools.sh 
+    bash install_ambertools.sh -v 3 --prefix $HOME --non-conda 
+    echo "source $HOME/amber17/amber.sh" >> ~/.bashrc
+    ```
+
 
 ### Copyright & Licensing
 This software has been developed in the MMB group (http://mmb.pcb.ub.es) at the
