@@ -101,12 +101,14 @@ And follow the SCWRL4 interactive installation instructions.
     sudo apt-get install autodock autodock-vina autodocktools autogrid
     ```
 
-7. Install AMBERTOOLS:
+7. Install AMBERTOOLS and ACPYPE:
 
     ```bash
     wget http://ambermd.org/downloads/install_ambertools.sh 
     bash install_ambertools.sh -v 3 --prefix $HOME --non-conda 
     echo "source $HOME/amber17/amber.sh" >> ~/.bashrc
+
+    sudo pip install acpype
     ```
 
 
