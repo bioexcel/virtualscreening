@@ -26,12 +26,28 @@ class MmbPdb(object):
 
     def get_cluster_pdb_codes(self, pdb_code, cluster="cl-90"):
         """
-        Returns the list of pdb_codes of the selected cluster
+        Returns the list of pdb_codes of the selected cluster. 'pdb_code' format: [pdbCode] 
         """
         pdb_codes = set()
         url = self.url+pdb_code.lower()+'/clusters/'+cluster+".json"
         cluster = json.loads(requests.get(url).content)['clusterMembers']
         for elem in cluster:
             pdb_codes.add(elem['_id'].lower())
-
         return pdb_codes
+
+    def get_cluster_pdb_code_chains(self, pdb_code, cluster="cl-90"):
+        """
+        Returns the list of PDB codes and chains of the selected cluster. 'pdb_code' format: [pdbCode](_[chain])
+        """
+        pdb_code_chains = set()
+        url = self.url+pdb_code+'/clusters/'+cluster+".json"
+        content = json.loads(requests.get(url).content)
+	try:
+	    cluster = json.loads(requests.get(url).content)['clusterMembers']
+	except:
+	    return pdb_code_chains
+	
+        for elem in cluster:
+            for chain in elem['chainIds']:
+                pdb_code_chains.add(chain)
+        return pdb_code_chains
