@@ -195,11 +195,12 @@ genrestr:
 
 bindingsite:
   properties:
+    identity_cluster: 90
     clusterPDBs_zip_path: 2GS2_A_cluster.tar.gz
     input_pdb_path: 2GS2_A.pdb
     output_pdb_path: bindingSitetest.pdb
-    clusterPDBs_path:
-    matrix: blosum62
+    clusterPDBs_path: /tmp/
+    matrix_name: blosum62
     gap_open: -10.0
     gap_extend: -0.5
     trim_ends: True
