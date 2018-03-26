@@ -134,8 +134,6 @@ class BindingSite(object):
 	clusterPDB_ligands_num     = 0
 
 
-	io = Bio.PDB.PDBIO()
-	cluster_aligned_path = self.dirpath + "/" + structure_name + "_cluster_superimposed.pdb"
 
 	for cluster_name in cluster_list:
 
@@ -186,11 +184,8 @@ class BindingSite(object):
 		    clusterPDB_ligand = clusterPDB_ligands[0]
 		    lig_atoms_num = len(clusterPDB_ligands[0].get_list())
 
-		print "    Selected ligand : %s (%s atoms)" % (clusterPDB_ligand.get_resname(), lig_atoms_num)
+		print "    Member accepted. Valid ligand found: %s (%s atoms)" % (clusterPDB_ligand.get_resname(), lig_atoms_num)
 			
-		clusterPDB_ligand_center = numpy.sum(atom.coord for atom in clusterPDB_ligand) / len(clusterPDB_ligand)
-		print "    Center GEO: %s" % clusterPDB_ligand_center 
-		    
 		##
 		## Mapping residues by sequence alignment to match structPDB-clusterPDB paired residues
 
@@ -199,11 +194,12 @@ class BindingSite(object):
 
 		# Pairwise align
     		aln, residue_map = self.__align_sequences(structPDB_seq,clusterPDB_seq)
-		print "    Aligned sequence is:\n    %s" % aln[1];
+		print "    Matching residues to input PDB structure. Alignment is:\n    %s" % aln[1];
 
 	        # Calculate (gapless) sequence identity
 	        seq_identity, gap_seq_identity = self.__calculate_alignment_identity(aln[0], aln[1])
-		print "    Sequence identity (%%): %s        Gap less identity (%%): %s" % (seq_identity,gap_seq_identity)
+		print "    Sequence identity (%%): %s" % seq_identity
+		print "    Gap less identity (%%): %s" % gap_seq_identity
 
 
 		##
@@ -218,7 +214,7 @@ class BindingSite(object):
 		if len(cluster_atoms)==0:
 		    raise Exception('Cannot find CA atoms (1st model, 1st chain) in cluster member {1} aligning to "input_pdb_path" {2}. Ignoring this member.'.format(clusterPDB_path,self.input_pdb_path))
 		else:
-		    print "    Found %s aligned protein residues" % len(cluster_atoms)
+		    print "    Superimposing %s aligned protein residues" % len(cluster_atoms)
 
 		#cluster_atoms = []
 		#for cluster_res in clusterPDB:
@@ -235,25 +231,31 @@ class BindingSite(object):
 		si = Bio.PDB.Superimposer()
 		si.set_atoms(struct_atoms, cluster_atoms)
 		si.apply(clusterPDB.get_atoms())
-		print "    Cluster PDB superimposed. RMSD=%s" %si.rms
+		print "    RMSD: %s" %si.rms
 
 		# Save transformed structure (and ligand)
 		clusterPDB_ligand_aligned = clusterPDB[clusterPDB_ligand.get_id()]
-		print "    Saving ligand coordinates: %s" % clusterPDB_ligand_aligned
+		print "    Saving transformed ligand coordinates"
 
 		clusterPDB_ligands_aligned.append(clusterPDB_ligand_aligned)
 
-
-
-		clusterPDB_ligands_num += 1
+		#iioo = Bio.PDB.PDBIO()
+		#iioo.set_structure(clusterPDB_ligand_aligned)
+		#iioo.save(self.dirpath + "/cluster_" + cluster_name +  "_ligand.pdb")
 
 		##
 		##  Stop after n accepted cluster members
+
+		clusterPDB_ligands_num += 1
+
 		if clusterPDB_ligands_num > 10:
 		    break
 
+
 	##
 	## Select binding site atoms as those around cluster superimposed ligands
+
+	print "\nDefining binding site residues as those %sA around the %s cluster superimposed ligands" % (self.radius,clusterPDB_ligands_num)
 
 	# select Atoms from aligned ligands
 	clusterPDB_ligands_aligned2      = [res for res in clusterPDB_ligands_aligned]
@@ -269,36 +271,52 @@ class BindingSite(object):
 		# look for PDB atoms 5A around each ligand atom
 		k_l = structPDB_neighbors.search(ligand_atom.coord, self.radius, 'R')
 		for k in k_l: 
-		    #io.set_structure(k)
-		    structPDB_bs_residues_raw[k] = k.get_full_id()
-
-	print "Residus BS son:"	
-	print structPDB_bs_residues_raw.keys()
+		    structPDB_bs_residues_raw[k.get_id()] = k.get_full_id()
 
 	##
 	## Save binding site to PDB
-	print "\nWriting binding site residues into %s" % self.output_pdb_path
 
-	# Test_0: append each selected residue (lin 272) one by one into the structure to be writen
+	io = Bio.PDB.PDBIO()
+	print "Writing binding site residues into %s" % self.output_pdb_path
 
-	#io.save(self.output_pdb_path)
-
-	# Test_1: create PDB object with the selected residues to set it as the structure to write
-
-	io.set_structure(structPDB_bs_residues_raw.keys())
+	# unselect input PDB atoms not in binding site
+	structPDB_bs_atoms = 0
+	for res in list(structPDB):
+	    if res.get_id() not in structPDB_bs_residues_raw.keys():
+		structPDB.detach_child(res.get_id())
+	    else:
+		structPDB_bs_atoms += len(res.get_list())
+	
+	# write PDB file
+	io.set_structure(structPDB)
 	io.save(self.output_pdb_path)
 
 
-	# Test_2 : writing selection of input PDB.
+	##
+	## Compute binding site box size
 
-	#class Gly(Bio.PDB.Select):
-	#    def accept_residue(self, residue):
-	#	if residue.get_resname()=='GLY':
-	#	    return 1
-	#	else:
-	#	    return 0
-	#io.set_structure(structPDB)
-	#io.save(self.output_pdb_path,Gly())
+	# compute box center
+	structPDB_bs_box_center = numpy.sum(atom.coord for atom in structPDB.get_atoms()) / structPDB_bs_atoms
+	print "Binding site center (Amstrongs): %8.3f%8.3f%8.3f" % (structPDB_bs_box_center[1],structPDB_bs_box_center[1],structPDB_bs_box_center[2])
+
+	# compute box size
+	structPDB_bs_coords_max = numpy.amax([atom.coord for atom in structPDB.get_atoms()],axis=0)
+	structPDB_bs_box_size   = structPDB_bs_coords_max - structPDB_bs_box_center
+	print "Binding site size (Amstrongs):   %8.3f%8.3f%8.3f" % (structPDB_bs_box_size[0],structPDB_bs_box_size[1],structPDB_bs_box_size[2])
+
+	vol = numpy.prod(structPDB_bs_box_size) * 2**3
+	print "Volume (cubic Amstrongs): %.0f" % vol
+
+	# add box details a PDB remarks
+	remarks  = "REMARK 900\nREMARK 900 RELATED  ENTRIES\nREMARK 900 RELATED ID:%s CHAIN:%s\n" % (pdb_code,structPDB_chainid)
+	remarks += "REMARK BOX CENTER:%8.3f%8.3f%8.3f" % (structPDB_bs_box_center[1],structPDB_bs_box_center[1],structPDB_bs_box_center[2])
+	remarks += " SIZE:%8.3f%8.3f%8.3f" % (structPDB_bs_box_size[0],structPDB_bs_box_size[1],structPDB_bs_box_size[2])
+
+	with open(self.output_pdb_path, 'r+') as f:
+            content = f.read()
+            f.seek(0, 0)
+            f.write(remarks.rstrip('\r\n') + '\n' + content)
+
 
 
     #############
