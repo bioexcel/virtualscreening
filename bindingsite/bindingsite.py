@@ -25,34 +25,34 @@ import numpy
 class BindingSite(object):
     """Finds the binding site of the input_pdb file based on the ligands' location of similar structures (members of the sequence identity cluster)
     Args:
-        input_pdb_path (str): Path to the PDB protein structure where to find out the binding site. It should contain only a single chain, and the file name should indicate the pdb code (i.e. '1pio_A.pdb')
-        clusterPDBs_zip_path (str): Path to the TAR file containing the PDBs of cluster90 members.
+	pdb_code (str): PDB code for the protein structure where to binding site is to be find
+	pdb_chain (str): Chain id for the pdb_code where to binding site is to be find
         output_pdb_path (str): Path to the PDB containig the residues belonging to the binding site
         properties (dic):
-            identity_cluster: Minimal sequence identity (%) of the cluster members shared with the input_pdb. Options: '95', '90', '75' ,'50'
-            clusterPDBs_path (str): Path the uncompressed file containing the PDBs of cluster90 members
-	    matrix (str): Substitution matrices for use in alignments. Available matrices are: 'benner6', 'benner22', 'benner74', 'blosum100', 'blosum30', 'blosum35', 'blosum40', 'blosum45', 'blosum50', 'blosum55', 'blosum60', 'blosum62', 'blosum65', 'blosum70', 'blosum75', 'blosum80', 'blosum85', 'blosum90', 'blosum95', 'feng', 'fitch', 'genetic', 'gonnet', 'grant', 'ident', 'johnson', 'levin', 'mclach', 'miyata', 'nwsgappep', 'pam120', 'pam180', 'pam250', 'pam30', 'pam300', 'pam60', 'pam90', 'rao', 'risler', 'structure'
-	    gap_open (float): Gap open penalty
-	    gap_extend (float): Gap extend penalty
-	    trim_ends (True|False): Cut unaligned sequence ends
-	    radius: Distance(Amstrongs) around ligand to catch as binding site
+	    radius: Cut-off distance(Amstrongs) around ligand atoms to consider a protein atom as a binding site atom. Default: 5
+            identity_cluster: Minimal sequence identity (%) of the cluster members shared with the input_pdb. Options: '95', '90', '75' ,'50'. Default: 90
+	    max_num_ligands: Total number of superimposed ligands to be extracted from the identity cluster. For populated clusters, the restriction avoids to superimpose redundant structures. If 0, all ligands extracted will be considered. Default: 15.
+	    matrix (str): Substitution matrices for use in alignments. Available matrices are: 'benner6', 'benner22', 'benner74', 'blosum100', 'blosum30', 'blosum35', 'blosum40', 'blosum45', 'blosum50', 'blosum55', 'blosum60', 'blosum62', 'blosum65', 'blosum70', 'blosum75', 'blosum80', 'blosum85', 'blosum90', 'blosum95', 'feng', 'fitch', 'genetic', 'gonnet', 'grant', 'ident', 'johnson', 'levin', 'mclach', 'miyata', 'nwsgappep', 'pam120', 'pam180', 'pam250', 'pam30', 'pam300', 'pam60', 'pam90', 'rao', 'risler', 'structure'. Default: blosum62
+	    gap_open (float): Gap open penalty. Default: -10.0
+	    gap_extend (float): Gap extend penalty. Default: -0.5
+	    trim_ends (True|False): Cut unaligned sequence ends. Default: True
     """
 
-    def __init__(self, input_pdb_path, clusterPDBs_zip_path, output_pdb_path, properties, **kwargs):
+    def __init__(self, pdb_code, pdb_chain, output_pdb_path, properties, **kwargs):
         if isinstance(properties, basestring):
             properties=json.loads(properties)
 	#i/o
-        self.input_pdb_path       = input_pdb_path
-        self.clusterPDBs_zip_path = clusterPDBs_zip_path
+        self.pdb_code             = pdb_code.lower()
+        self.pdb_chain            = pdb_chain.upper()
         self.output_pdb_path      = output_pdb_path
 	# options
+	self.radius               = properties.get('radius', 5)
 	self.identity_cluster     = str(properties.get('identity_cluster', '90'))
-        self.clusterPDBs_path     = properties.get('clusterPDBs_path','tmp/cluster')
+	self.max_num_ligands      = properties.get('max_num_ligands',15)
 	matrix_name               = properties.get('matrix', "blosum62")
 	self.gap_open             = properties.get('gap_open', -10.0)
 	self.gap_extend           = properties.get('gap_extend', -0.5)
 	trim_ends                 = properties.get('trim_ends', "True")
-	self.radius               = properties.get('radius', 5)
 
 	# eval booleans
 	if trim_ends == "True": self.trim_ends=True; self.trim_ends=False
@@ -62,6 +62,8 @@ class BindingSite(object):
 	# load modres and ions list
 	self.modres   = self.__modres()
 	self.ions     = self.__ions()
+
+	# set working directory
         self.dirpath  = os.getcwd()
 
     def launch(self):
@@ -70,74 +72,65 @@ class BindingSite(object):
 	#out_log, err_log = fu.get_logs(path=self.path, mutation=self.mutation, step=self.step)
 
 	##
+	## Download reference PDB structure
+	structure_name  = self.pdb_code + "_" + self.pdb_chain
+	input_pdb_path  = self.dirpath + "/" + structure_name + ".pdb"
+
+	print "\nDownloading input PDB %s to %s" % (structure_name,input_pdb_path)
+	pdb.MmbPdb().get_pdb(self.pdb_code,input_pdb_path,"filter=:" + self.pdb_chain)
+	
+	if not os.path.isfile(input_pdb_path):
+	    raise Exception('Failed to download input PDB file % from MMB PDB server' % input_pdb_path )
+
+	##
 	## Loading and parsing reference PDB structure
-	print "\nParsing input PDB structure %s..." % self.input_pdb_path
+	print "\nParsing input PDB structure %s..." % input_pdb_path
 
-	# Get pdb_code from input_PDB_path
-	if self.input_pdb_path.endswith(('.pdb', '.ent','.PDB', '.ENT')):
-		structure_name = os.path.basename(self.input_pdb_path.split('.')[0])
-	else:
-		structure_name = os.path.basename(self.input_pdb_path)
+	# Parse structure
+	parser      = Bio.PDB.PDBParser()
+	structPDB   = parser.get_structure(structure_name,input_pdb_path)[0]
 
-	pdb_code, pdb_chain = self.__get_pdb_code_from_filename(structure_name)
-	print "    PDB code: %s" %  pdb_code
-
-	# Pase structure
-	structPDB = {}
-
-	if os.path.isfile(self.input_pdb_path):
-	    parser         = Bio.PDB.PDBParser()
-	    structPDB      = parser.get_structure(structure_name,self.input_pdb_path)[0]
-	else:
-	    raise Exception('Input file "input_pdb_path" {1} is not a file'.format(self.input_pdb_path))
-
-	# Use only the fist chain
+	# Use only one chain
 	n_chains = structPDB.get_list()
 	if len(n_chains) != 1:
-	    warnings.warn('More than one chain found in "input_pdb_path". Using only first chain to find the binding site')
+	    warnings.warn('More than one chain found in the input PDB structure. Using only the first chain to find the binding site')
 
 	for struct_chain in structPDB.get_chains():
-	    structPDB_chainid = struct_chain.get_id()
+	    if self.pdb_chain  != struct_chain.get_id():
+	        raise Exception('The input PDB %s does not contain the given chain %s. Found %s' % (input_pdb_path,self.pdb_chain,struct_chain.get_id()) )
 	    structPDB = struct_chain
-	if not structPDB_chainid:
-	    if pdb_chain:
-	        structPDB_chainid = pdb_chain
-	        warnings.warn('Input file "input_pdb_path" %s has no chain identifier. Infering it from file name: %2.' % (self.input_pdb_path,structPDB_chainid))
-	    else:
-	        raise Exception('Input file "input_pdb_path" {1} has no chain identifier. Cannot find identity cluster members without it.'.format(self.input_pdb_path))
 
 	# Get AA sequence
 	structPDB_seq   = self.__get_pdb_sequence(structPDB)
 	if len(structPDB_seq) == 0:
-		raise Exception('Input file "input_pdb_path" {1} is not a file'.format(self.input_pdb_path))
+		raise Exception('Cannot extract AA sequence from the input PDB structure {1}. Wrong format?'.format(input_pdb_path))
 	else:
-		print "    Found %s residues (chain %s)" % (len(structPDB_seq),structPDB_chainid)
-
+		print "    Found %s residues (chain %s)" % (len(structPDB_seq),self.pdb_chain)
 
 	##
 	## Getting PDBs for members of the identity cluster
 
 	cluster_name = "cl-" + self.identity_cluster
-	cluster_list = pdb.MmbPdb().get_cluster_pdb_code_chains(pdb_code+"_"+structPDB_chainid,cluster_name)
+	cluster_list = pdb.MmbPdb().get_cluster_pdb_code_chains(self.pdb_code+"_"+self.pdb_chain,cluster_name)
+
 	if len(cluster_list) == 0:
-		raise Exception('Found no similar structures to identity cluster %s for "input_pdb_path" %s. Use a less restrictive identity cluster? Check available options for argument "identity_cluster"' % (cluster_name,self.input_pdb_path))
+		raise Exception('Found no similar structures into identity cluster %s for input PDB structure %s. Use a less restrictive identity cluster? Check available options for argument "identity_cluster"' % (cluster_name,structure_name))
 	else:
-		print "    Found %s similar structures in the identity cluster %s%%" % (len(cluster_list),cluster_name)
+		print "Found %s similar structures into the identity cluster %s%%" % (len(cluster_list),cluster_name)
 	
 
 	##
 	## Loop each clusterPDB
 
-	print "\nAligning cluster members to input_pdb one by one..."
+	print "\nAligning cluster members ligands to input PDB structure, one by one..."
 
 	clusterPDB_ligands_aligned = []
 	clusterPDB_ligands_num     = 0
 
 
-
 	for cluster_name in cluster_list:
 
-		print "\nCluster member: %s" % cluster_name
+		print "\n- Cluster member: %s" % cluster_name
 
 	        clusterPDB_path         = self.dirpath + "/cluster_" + cluster_name + ".pdb"
 		clusterPDB_aligned_path = self.dirpath + "/cluster_" + cluster_name + "_aligned.pdb"
@@ -207,12 +200,17 @@ class BindingSite(object):
 
 		struct_atoms  = []
 		cluster_atoms = []
+
     		for struct_res in residue_map:
-		    struct_atoms.append(structPDB[struct_res]['CA'])
-		    cluster_atoms.append(clusterPDB[residue_map[struct_res]]['CA'])
+		    try:
+		        cluster_atoms.append(clusterPDB[residue_map[struct_res]]['CA'])
+		    	struct_atoms.append(structPDB[struct_res]['CA'])
+		    except KeyError:
+			print "Cannot find CA atom for residue %s  (input PDB  %s)" % (structPDB[struct_res],struct_res)
+			pass
 
 		if len(cluster_atoms)==0:
-		    raise Exception('Cannot find CA atoms (1st model, 1st chain) in cluster member {1} aligning to "input_pdb_path" {2}. Ignoring this member.'.format(clusterPDB_path,self.input_pdb_path))
+		    raise Exception('Cannot find CA atoms (1st model, 1st chain) in cluster member {1} when aligning against {2}. Ignoring this member.'.format(clusterPDB_path,structure_name))
 		else:
 		    print "    Superimposing %s aligned protein residues" % len(cluster_atoms)
 
@@ -248,7 +246,7 @@ class BindingSite(object):
 
 		clusterPDB_ligands_num += 1
 
-		if clusterPDB_ligands_num > 10:
+		if clusterPDB_ligands_num > self.max_num_ligands:
 		    break
 
 
@@ -291,32 +289,7 @@ class BindingSite(object):
 	io.set_structure(structPDB)
 	io.save(self.output_pdb_path)
 
-
-	##
-	## Compute binding site box size
-
-	# compute box center
-	structPDB_bs_box_center = numpy.sum(atom.coord for atom in structPDB.get_atoms()) / structPDB_bs_atoms
-	print "Binding site center (Amstrongs): %8.3f%8.3f%8.3f" % (structPDB_bs_box_center[1],structPDB_bs_box_center[1],structPDB_bs_box_center[2])
-
-	# compute box size
-	structPDB_bs_coords_max = numpy.amax([atom.coord for atom in structPDB.get_atoms()],axis=0)
-	structPDB_bs_box_size   = structPDB_bs_coords_max - structPDB_bs_box_center
-	print "Binding site size (Amstrongs):   %8.3f%8.3f%8.3f" % (structPDB_bs_box_size[0],structPDB_bs_box_size[1],structPDB_bs_box_size[2])
-
-	vol = numpy.prod(structPDB_bs_box_size) * 2**3
-	print "Volume (cubic Amstrongs): %.0f" % vol
-
-	# add box details a PDB remarks
-	remarks  = "REMARK 900\nREMARK 900 RELATED  ENTRIES\nREMARK 900 RELATED ID:%s CHAIN:%s\n" % (pdb_code,structPDB_chainid)
-	remarks += "REMARK BOX CENTER:%8.3f%8.3f%8.3f" % (structPDB_bs_box_center[1],structPDB_bs_box_center[1],structPDB_bs_box_center[2])
-	remarks += " SIZE:%8.3f%8.3f%8.3f" % (structPDB_bs_box_size[0],structPDB_bs_box_size[1],structPDB_bs_box_size[2])
-
-	with open(self.output_pdb_path, 'r+') as f:
-            content = f.read()
-            f.seek(0, 0)
-            f.write(remarks.rstrip('\r\n') + '\n' + content)
-
+	sys.exit(0)
 
 
     #############
@@ -384,11 +357,11 @@ class BindingSite(object):
         return (seq_id, gap_id)
 
 
-    def __get_ligand_residues(self,pdb_chain,ignore_wats=True,ignore_small_molec=True, ignore_ions=True, ignore_modres=True):
+    def __get_ligand_residues(self,PDBchain,ignore_wats=True,ignore_small_molec=True, ignore_ions=True, ignore_modres=True):
         """
 	Returns heteroatoms residues.
     	Args:
-	    pdb_chain (Bio.PDB.PDBParser chain object): PDB selection of the chain to be scanned
+	    PDBchain (Bio.PDB.PDBParser chain object): PDB selection of the chain to be scanned
 	    ignore_wats (boolean): If True, water residues will be skipped, and not returned as ligand residues
 	    ignore_small_molec (boolean): If True, small ligands (< 5 atoms) will be skipped, and not returned as ligand residues
 	    ignore_ions (boolean): If True, ion residues will be skipped, and not returned as ligand residues
@@ -398,7 +371,7 @@ class BindingSite(object):
 	small_molec_atoms_min = 5
 	ligands = []
 
-	for res in pdb_chain.get_residues():
+	for res in PDBchain.get_residues():
 	    res_entity  = res.get_full_id()
 	    res_hetflag = res_entity[3][0]
 
@@ -450,30 +423,6 @@ class BindingSite(object):
 	p = re.compile('([0-9][A-Za-z0-9]{3})[\W_]*([A-Za-z])*')
 	m = p.match(filename)
 	return (m.group(1),m.group(2))
-
-
-    def untar_file(self, tar_file=None, dest_dir=None):
-	"""Untar (and uncompress - gzip,bz2) files into destionation folder
-	"""
-	import tarfile
-	import errno
-
-	# open TAR file
-	tar_path = os.path.abspath(tar_file)
-	tar = tarfile.open(tar_path)
-
-	# create destination folder
-	try:
-	    os.makedirs(dest_dir)
-	except OSError as exc:
-	    if exc.errno == 17 and os.path.isdir(dest_dir):
-                pass
-            else:
-                raise
-
-	# extract all TAR files
-	tar.extractall(path=dest_dir)
-	tar.close()
 
 
     def __ions(self):
@@ -1154,10 +1103,10 @@ def main():
     properties_file= sys.argv[3]
     prop           = settings.YamlReader(properties_file, system).get_prop_dic()[step]
 
-    BindingSite(input_pdb_path       = sys.argv[4],
-                clusterPDBs_zip_path = sys.argv[5],
-                output_pdb_path     = sys.argv[6],
-                properties           = prop        ).launch()
+    BindingSite(pdb_code        = sys.argv[4],
+                pdb_chain       = sys.argv[5],
+                output_pdb_path = sys.argv[6],
+                properties           = prop    ).launch()
 
 
 if __name__ == '__main__':
