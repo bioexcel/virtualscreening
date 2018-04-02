@@ -14,9 +14,9 @@ class TestBindingSite(object):
     def test_launch(self):
         output_pdb_path=opj(self.properties['path'], self.properties['output_pdb_path'])
 
-        BindingSite(input_pdb_path= opj(self.data_dir, self.properties['input_pdb_path']),
-                    clusterPDBs_zip_path=opj(self.data_dir, self.properties['clusterPDBs_zip_path']),
-                    output_pdb_path=output_pdb_path,
-                    properties=self.properties).launch()
+        BindingSite(pdb_code        = self.properties['pdb_code'],
+                    pdb_chain       = self.properties['pdb_chain'],
+                    output_pdb_path = opj(self.properties['path'], self.properties['output_pdb_path']),
+                    properties      = self.properties).launch()
 
         assert fx.not_empty(output_pdb_path)

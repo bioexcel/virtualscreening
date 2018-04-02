@@ -95,10 +95,16 @@ And follow the SCWRL4 interactive installation instructions.
     echo "source /usr/local/gromacs/bin/GMXRC" >> ~/.bashrc
     ```
 
-6. Install Autodock-vina:
+6. Install AutoDockVina and MGLTools:
 
     ```bash
     sudo apt-get install autodock autodock-vina autodocktools autogrid
+    cd $HOME/bin
+    wget http://mgltools.scripps.edu/downloads/downloads/tars/releases/REL1.5.6/mgltools_x86_64Linux2_1.5.6.tar.gz
+    tar zxvf mgltools_x86_64Linux2_1.5.6.tar.gz
+    cd mgltools_x86_64Linux2_1.5.6
+    ./install.sh
+    echo "source $HOME/mgltools_x86_64Linux2_1.5.6/initMGLTools.sh" >> ~/.bashrc
     ```
 
 7. Install AMBERTOOLS and ACPYPE:
