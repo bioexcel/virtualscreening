@@ -13,88 +13,32 @@ from tools import file_utils as fu
 
 
 class AutoDockVina(object):
-    """Wrapper class for AutoDock Vina software.
-    Args:
-        input_pdb_path (str): Path to the input PDB file.
-        output_pdb_path (srt): Path to the output mutated PDB file.
-        properties (dic): All properties and system path
-    """
-    def __init__(self, input_pdb_path, output_pdb_path, properties, **kwargs):
+    """Wrapper class for AutoDock Vina software"""
+    def __init__(self, ligand_pdb_path, ligand_name, receptor_pdb_path,
+                 box_path, output_path, properties, **kwargs):
         if isinstance(properties, basestring):
             properties=json.loads(properties)
-        self.input_pdb_path = input_pdb_path
-        self.output_pdb_path = output_pdb_path
-        self.scwrl4_path = properties.get('scwrl4_path',None)
+        self.ligand_pdb_path = ligand_pdb_path
+        self.ligand_name = ligand_name
+        self.receptor_pdb_path = receptor_pdb_path
+        self.box_path = box_path
+        self.output_path = output_path
+        self.vina_path = properties.get('vina_path',None)
         self.path = properties.get('path','')
         self.step = properties.get('step','')
-        self.mutation = properties['mut'] if properties.get('mut', None) else properties['mutation']
-        pattern = re.compile(("(?P<chain>[a-zA-Z*]+).(?P<wt>[a-zA-Z]{3})(?P<resnum>\d+)(?P<mt>[a-zA-Z]{3})"))
-        self.mut_dict = pattern.match(self.mutation).groupdict()
+
 
     def launch(self):
-        """Launches the execution of the SCWRL binary.
-        """
+        """Launches the execution of the AutoDock Vina docking"""
+        out_log, err_log = fu.get_logs(path=self.path, step=self.step)
 
-        out_log, err_log = fu.get_logs(path=self.path, mutation=self.mutation, step=self.step)
-        if self.mutation is not None:
-            # Read structure with Biopython
-            parser = PDBParser(PERMISSIVE=1,QUIET=True)
-            st = parser.get_structure('s', self.input_pdb_path)  # s random id never used
-
-            if self.mut_dict['chain'] != 'ALL':
-                chains = [self.mut_dict['chain']]
-            else:
-                chains = [chain.id for chain in st[0]]
-
-            resnum = int(self.mut_dict['resnum'])
-
-            sequence=''
-            for chain in chains:
-                residue = st[0][chain][(' ', resnum, ' ')]
-                backbone_atoms = ['N', 'CA', 'C', 'O', 'CB']
-                not_backbone_atoms = []
-
-                # The following formula does not work. Biopython bug?
-                # for atom in residue:
-                #     if atom.id not in backbone_atoms:
-                #         residue.detach_child(atom.id)
-
-                for atom in residue:
-                    if atom.id not in backbone_atoms:
-                        not_backbone_atoms.append(atom)
-                for atom in not_backbone_atoms:
-                    residue.detach_child(atom.id)
-
-                # Change residue name
-                residue.resname = self.mut_dict['mt'].upper()
-
-                # Creating a sequence file where the lower case residues will
-                # remain untouched and the upper case residues will be modified
-                aa1c = { 'ALA':'A', 'CYS':'C', 'CYX':'C', 'ASP':'D', 'ASH':'D', 'GLU':'E', 'GLH':'E', 'PHE':'F', 'GLY':'G', 'HIS':'H', 'HID':'H', 'HIE':'H', 'HIP':'H', 'ILE':'I', 'LYS':'K', 'LYP':'K', 'LEU':'L', 'MET':'M', 'MSE':'M', 'ASN':'N', 'PRO':'P', 'HYP':'P', 'GLN':'Q', 'ARG':'R', 'SER':'S', 'THR':'T', 'VAL':'V', 'TRP':'W', 'TYR':'Y'}
-                for res in st[0][chain].get_residues():
-                    if res.resname not in aa1c:
-                        st[0][chain].detach_child(res.id)
-                    elif (res.id == (' ', resnum,' ')):
-                        sequence += aa1c[res.resname].upper()
-                    else:
-                        sequence += aa1c[res.resname].lower()
-
-            # Write resultant sequence
-            sequence_file_path = fu.add_step_mutation_path_to_name("sequence.seq", self.step, self.mutation)
-            with open(sequence_file_path, 'w') as sqfile:
-                sqfile.write(sequence+"\n")
-
-            # Write resultant structure
-            w = PDBIO()
-            w.set_structure(st)
-            prepared_file_path = fu.add_step_mutation_path_to_name("prepared.pdb", self.step, self.mutation)
-            w.save(prepared_file_path)
-
-        else:
-            prepared_file_path = self.input_pdb_path
-
-        scrwl = 'Scwrl4' if self.scwrl4_path is None else self.scwrl4_path
-        cmd = [scrwl, '-i', prepared_file_path, '-o', self.output_pdb_path, '-h', '-t']
+        vina = 'vina' if self.vina_path is None else self.vina_path
+        x0, y0, z0 = (0, 0, 0)
+        sidex, sidey, sidez = (5, 5, 5)
+        cmd = [vina, '--ligand', self.ligand_pdb_path,  '--receptor', self.receptor_pdb_path,
+               '--center_x=' + x0, '--center_y=' + y0, '--center_z=' + z0,
+               '--size_x=' + sidex, '--size_y=' + sidey, '--size_z=' + sidez,
+               "--out ", out_log + " --log " + logfile', prepared_file_path, '-o', self.output_pdb_path, '-h', '-t']
         if self.mutation:
             cmd.append('-s')
             cmd.append(sequence_file_path)
@@ -108,7 +52,9 @@ def main():
     step=sys.argv[2]
     properties_file=sys.argv[3]
     prop = settings.YamlReader(properties_file, system).get_prop_dic()[step]
-    AutoDockVina(input_pdb_path=sys.argv[4], output_pdb_path=sys.argv[5], properties=prop).launch()
+    AutoDockVina(ligand_pdb_path=sys.argv[4], ligand_name=sys.argv[5],
+                 receptor_pdb_path=sys.argv[6], box_path=sys.argv[7],
+                 output_path=sys.argv[8], properties=prop).launch()
 
 if __name__ == '__main__':
     main()

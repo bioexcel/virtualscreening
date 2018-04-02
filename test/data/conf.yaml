@@ -1,5 +1,6 @@
 linux:
   gmx_path: /usr/local/gromacs/bin/gmx
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
   workflow_path: /home/pau/projects/pymdsetup/testworkflow
   gnuplot_path: /usr/bin/gnuplot
@@ -7,7 +8,7 @@ linux:
 
 linux-laia:
   workflow_path: /tmp/tests
-  
+
 macos:
   gmx_path: /usr/local/bin/gmx
   scwrl4_path: /Users/pau/soft/scwrl4/Scwrl4
@@ -17,6 +18,7 @@ macos:
 
 virtualbox:
   gmx_path: /usr/local/gromacs/bin/gmx
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /home/compss/scwrl/scwrl4/Scwrl4/Scwrl4
   workflow_path: /home/compss/pymdsetup/testworkflow
   gnuplot_path: /usr/bin/gnuplot
@@ -24,6 +26,7 @@ virtualbox:
 
 open_nebula:
   gmx_path: /usr/local/gromacs/bin/gmx
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /home/user/scwrl4/Scwrl4
   workflow_path: /home/user/pymdsetup/testworkflow
   gnuplot_path: /usr/bin/gnuplot
@@ -31,6 +34,7 @@ open_nebula:
 
 mare_nostrum:
   gmx_path: /gpfs/home/bsc23/bsc23210/gromacs/bin/gmx
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
   workflow_path: /gpfs/home/bsc23/bsc23210/pymdsetup/testworkflow
   gnuplot_path: gnuplot
@@ -40,6 +44,7 @@ mare_nostrum:
 
 minotauro:
   gmx_path: gmx_mpi
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /gpfs/home/bsc23/bsc23210/scwrl4/Scwrl4
   workflow_path: /gpfs/home/bsc23/bsc23210/pymdsetup/testworkflow
   gnuplot_path: /gpfs/apps/NVIDIA/GNUPLOT/4.6.3/bin/gnuplot
@@ -49,6 +54,7 @@ minotauro:
 
 pmes:
   gmx_path: /usr/local/gromacs/bin/gmx
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /home/pmes/scwrl4/Scwrl4
   workflow_path: /home/pmes/pymdsetup/testworkflow
   gnuplot_path: /usr/bin/gnuplot
@@ -56,6 +62,7 @@ pmes:
 
 archer:
   gmx_path: gmx
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /home/d118/d118/andrio/scwrl/Scwrl4
   workflow_path: /home/d118/d118/andrio/pymdsetup/testworkflow
   gnuplot_path: gnuplot
@@ -65,6 +72,7 @@ archer:
 
 jureca:
   gmx_path: gmx
+  mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   scwrl4_path: /homea/ias-5/andrio/scwrl/Scwrl4
   workflow_path: /homea/ias-5/andrio/pymdsetup/testworkflow
   gnuplot_path: gnuplot
@@ -134,8 +142,6 @@ gromppmd:
       nstlist: 20
       tinit: 300
       continuation: 'yes'
-
-
 
 genion:
   properties:
