@@ -107,7 +107,13 @@ And follow the SCWRL4 interactive installation instructions.
     echo "source $HOME/mgltools_x86_64Linux2_1.5.6/initMGLTools.sh" >> ~/.bashrc
     ```
 
-7. Install AMBERTOOLS and ACPYPE:
+7. Install OpenBabel:
+
+    ```bash
+    sudo apt-get install openbabel python-openbabel
+    ```
+
+8. Install AMBERTOOLS and ACPYPE:
 
     ```bash
     wget http://ambermd.org/downloads/install_ambertools.sh 
