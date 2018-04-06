@@ -6,7 +6,6 @@ import json
 import openbabel
 import configuration.settings as settings
 from tools import file_utils as fu
-from vina_errors import MGLToolsConfigurationError
 
 
 class SDF2PDB(object):
