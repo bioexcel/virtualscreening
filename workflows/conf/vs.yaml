@@ -101,12 +101,22 @@ input_mapped_mutations_list: "*.Thr371Ile"
 
 ########################## Step paths & properties ##########################
 
+dude:
+  paths:
+    output_sdf_path: decoys.sdf
+  properties:
+    pdb_code: 2VGB
+
+sdf2pdb:
+  paths:
+    input_sdf_path: dependency/dude/decoys.sdf
+  properties:
 
 md_clustering:
   paths:
     workflow_path: md_clustering
   properties:
-    yaml_path: /home/pau/projects/virtualscreening/workflows/conf/egfr_md.yaml
+    yaml_path: /home/pau/projects/virtualscreening/workflows/conf/md_cluster.yaml
     system: linux
 
 # Step 1: mmbpdb -- Get PDB

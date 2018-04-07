@@ -11,7 +11,7 @@ class Dude(object):
     This class is a wrapper for the DUDE database (http://dude.docking.org)
 
     """
-    def __init__(self, output_sdf_path, properties):
+    def __init__(self, output_sdf_path, properties, **kwargs):
         self.mutation = properties.get('mutation',None)
         self.step = properties.get('step',None)
         self.path = properties.get('path','')

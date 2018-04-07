@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import time
@@ -19,13 +21,14 @@ import gnuplot_wrapper.gnuplot as gnuplot
 import gromacs_extra.ndx2resttop as ndx2resttop
 
 
-class Workflow(object):
-    def __init__(self, yaml_path, system, workflow_path):
+class MDCluster(object):
+    def __init__(self, yaml_path, system, workflow_path, structure_pdb_path, **kwargs):
         self.yaml_path=yaml_path
         self.system=system
         self.workflow_path=workflow_path
+        self.structure_pdb_path=structure_pdb_path
 
-    def launch():
+    def launch(self):
         yaml_path=self.yaml_path
         system=self.system
         workflow_path=self.workflow_path
@@ -48,7 +51,7 @@ class Workflow(object):
         out_log.info('')
 
         out_log.info( 'step1:  mmbpdb ------ Get PDB')
-        structure = conf.properties[system].get('initial_structure_pdb_path', None)
+        structure = self.structure_pdb_path
         out_log.info( 22*' '+'Selected PDB structure: ' + structure)
 
         out_log.info('step2 and 3:  scw --- Check and Repair PDB')
@@ -256,7 +259,7 @@ def main():
     yaml_path=sys.argv[1]
     system=sys.argv[2]
     workflow_path=sys.arv[3]
-    Workflow(yaml_path, system, workflow_path).launch()
+    EgfrMD(yaml_path, system, workflow_path).launch()
 
 if __name__ == '__main__':
     main()

@@ -3,29 +3,30 @@
 """Python wrapper module for the AutoDockVina sdf2pdb module"""
 import sys
 import json
-import openbabel
+import pybel
 import configuration.settings as settings
 from tools import file_utils as fu
 
 
 class SDF2PDB(object):
     """Encapsulates logic to convert an SDF file to PDB structure"""
-    def __init__(self, input_sdf_path, output_pdb_path, properties, **kwargs):
-        if isinstance(properties, basestring):
-            properties=json.loads(properties)
+    def __init__(self, input_sdf_path, properties, **kwargs):
+        self.mutation = properties.get('mutation',None)
+        self.step = properties.get('step',None)
+        self.path = properties.get('path','')
         self.input_sdf_path = input_sdf_path
         self.output_pdb_path = output_pdb_path
 
     def launch(self):
         """Launches the execution of the sdf2pdb module."""
-        out_log, err_log = fu.get_logs(path=self.path)
+        out_log, err_log = fu.get_logs(path=self.path, mutation=self.mutation, step=self.step)
+        pdb_list = []
+        for mol in pybel.readfile("sdf", self.input_sdf_path):
+            fname=str(mol.title)+'.pdb'
+            mol.write("pdb", fname)
+            pdblist.append(os.path.abspath(fname))
 
-        obConversion = openbabel.OBConversion()
-        obConversion.SetInAndOutFormats("sdf", "pdb")
-
-        mol = openbabel.OBMol()
-        obConversion.ReadFile(mol, self.input_sdf_path)
-        obConversion.WriteFile(mol, self.output_pdb_path)
+        return pdb_list
 
 
 def main():
@@ -36,7 +37,7 @@ def main():
     prop = settings.YamlReader(properties_file, system).get_prop_dic()[step]
     SDF2PDB(input_sdf_path=sys.argv[4],
             output_pdb_path=sys.argv[5],
-            properties=prop).launch()
+            properties=prop.launch()
 
 
 if __name__ == '__main__':
