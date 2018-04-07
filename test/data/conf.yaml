@@ -3,7 +3,7 @@ linux:
   mgltools_path: /home/vs/mgltools_x86_64Linux2_1.5.6
   vina_path: vina
   scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
-  workflow_path: /home/pau/projects/pymdsetup/testworkflow
+  workflow_path: /home/pau/projects/virtualscreening/testworkflow
   gnuplot_path: /usr/bin/gnuplot
   initial_structure_pdb_path: /home/pau/Desktop/structure.pdb
 
@@ -227,3 +227,8 @@ box:
     resid_pdb_path: bindingSitetest.pdb
     output_pdb_path: bindingSitetest_box.pdb
     offset: 2
+
+dude:
+  properties:
+    pdb_code: 2GS2
+    output_sdf_path: decoys.sdf

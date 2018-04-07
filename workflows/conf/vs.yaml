@@ -4,7 +4,7 @@
 linux:
   gmx_path: /usr/local/gromacs/bin/gmx
   scwrl4_path: /home/pau/soft/scwrl4/Scwrl4
-  workflow_path: /home/pau/projects/pymdsetup/pyr
+  workflow_path: /home/pau/projects/virtualscreening/testvs
   gnuplot_path: /usr/bin/gnuplot
   # Path to the initial pdb structure (if this field is empty
   # pdb_code field will be used to download the structure)
@@ -102,7 +102,12 @@ input_mapped_mutations_list: "*.Thr371Ile"
 ########################## Step paths & properties ##########################
 
 
-
+md_clustering:
+  paths:
+    workflow_path: md_clustering
+  properties:
+    yaml_path: /home/pau/projects/virtualscreening/workflows/conf/egfr_md.yaml
+    system: linux
 
 # Step 1: mmbpdb -- Get PDB
 step1_mmbpdb:

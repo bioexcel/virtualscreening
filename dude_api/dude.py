@@ -4,14 +4,20 @@ import shutil
 import json
 import gzip
 from mmb_api import pdb
+from tools import file_utils as fu
 
 class Dude(object):
     """Wrapper class for DUDE decoys database.
     This class is a wrapper for the DUDE database (http://dude.docking.org)
 
     """
-    def __init__(self, url=None):
-        self.url = url if url else "http://dude.docking.org"
+    def __init__(self, output_sdf_path, properties):
+        self.mutation = properties.get('mutation',None)
+        self.step = properties.get('step',None)
+        self.path = properties.get('path','')
+        self.pdb_code = properties.get('pdb_code',None)
+        self.url = properties.get('url', 'http://dude.docking.org')
+        self.output_sdf_path = output_sdf_path
         self.targets = {
             "3eml":"AA2AR", "2hzi":"ABL1",  "3bkl":"ACE",   "1e66":"ACES",  "2e1w":"ADA",
             "2oi0":"ADA17", "2vt4":"ADRB1", "3ny8":"ADRB2", "3cqw":"AKT1",  "3d0e":"AKT2",
@@ -34,27 +40,34 @@ class Dude(object):
             "1q4x":"THB",   "1ype":"THRB",  "2ayw":"TRY1",  "2zec":"TRYB1", "1syn":"TYSY",
             "1sqt":"UROK",  "2p2i":"VGFR2", "3biz":"WEE1",  "3hl5":"XIAP"}
 
-    def get_decoys_from_pdb(self, pdb_code, output_sdf_path):
+    def get_decoys_from_pdb(self):
         """
         Returns the pdb_code decoys
         """
-        if pdb_code in self.targets:
-            target = self.targets.get(pdb_code.lower())
+        out_log, err_log = fu.get_logs(path=self.path, mutation=self.mutation, step=self.step)
+        out_log.info(self.pdb_code+' not in target list checking cluster')
+        print 'hola'
+        if self.pdb_code in self.targets:
+            target = self.targets.get(self.pdb_code.lower())
         else:
-            pdb_set = pdb.MmbPdb().get_cluster_pdb_codes(pdb_code.lower())
+            out_log.info(self.pdb_code+' not in target list checking cluster')
+            print '2'
+            pdb_set = pdb.MmbPdb().get_cluster_pdb_codes(self.pdb_code.lower())
             targets_set = set(self.targets.keys())
             targets_pdb_set = pdb_set.intersection(targets_set)
             target = self.targets.get(targets_pdb_set.pop()).lower()
+            print target
             if not target:
                 return None
 
         decoys_file_name = 'decoys_final.sdf.gz'
         url = self.url+'/targets/'+target.lower()+'/'+decoys_file_name
+        print url
         req = requests.get(url, allow_redirects=True)
         with open(decoys_file_name, 'wb') as gz_file:
             gz_file.write(req.content)
         with gzip.open(decoys_file_name, 'rb') as gz_file:
-            with open(output_sdf_path, 'wb') as sdf_file:
+            with open(self.output_sdf_path, 'wb') as sdf_file:
                 sdf_file.write(gz_file.read())
 
-        return output_sdf_path
+        return self.output_sdf_path

@@ -34,9 +34,6 @@ class Cluster(object):
         self.mutation = properties.get('mutation',None)
         self.step = properties.get('step',None)
         self.path = properties.get('path','')
-        self.dista = properties.get('dista', False)
-        self.method = properties.get('method', 'linkage')
-        self.cutoff = str(properties.get('cutoff', 0.1))
         self.mpirun = properties.get('mpirun', False)
         self.mpirun_np = properties.get('mpirun_np', None)
 
@@ -47,10 +44,10 @@ class Cluster(object):
         out_log, err_log = fu.get_logs(path=self.path, mutation=self.mutation, step=self.step)
         gmx = 'gmx' if self.gmx_path is 'None' else self.gmx_path
 
-        cmd = [gmx, 'rms', '-xvg', 'none',
+        cmd = [gmx, 'cluster',
                '-s', self.input_gro_path,
                '-f', self.input_xtc_path,
-               '-o', self.output_pdb_path]
+               '-cl', self.output_pdb_path]
 
         if self.mpirun_np is not None:
             cmd.insert(0, str(self.mpirun_np))
@@ -61,13 +58,10 @@ class Cluster(object):
             cmd.append('\"'+"$'0\n0\n'"+'\"')
         else:
             cmd.insert(0, '|')
-            cmd.insert(0, '\"'+'0 0'+'\"')
+            cmd.insert(0, '\"'+'1 1'+'\"')
             cmd.insert(0, 'echo')
         command = cmd_wrapper.CmdWrapper(cmd, out_log, err_log)
-        command.launch()
-        xvg = self.output_xvg_path if os.path.isfile(self.output_xvg_path) else ntpath.basename(self.output_xvg_path)
-        self.mutation = '' if self.mutation is None else self.mutation
-        return {self.mutation: np.loadtxt(xvg)}
+        return command.launch()
 
 #Creating a main function to be compatible with CWL
 def main():
