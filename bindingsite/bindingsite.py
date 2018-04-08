@@ -38,12 +38,12 @@ class BindingSite(object):
             trim_ends (True|False): Cut unaligned sequence ends. Default: True
     """
 
-    def __init__(self, pdb_code, pdb_chain, output_pdb_path, properties, **kwargs):
+    def __init__(self, output_pdb_path, properties, **kwargs):
         if isinstance(properties, basestring):
             properties=json.loads(properties)
         #i/o
-        self.pdb_code             = pdb_code.lower()
-        self.pdb_chain            = pdb_chain.upper()
+        self.pdb_code             = properties.get('pdb_code','').lower()
+        self.pdb_chain            = properties.get('pdb_chain','').upper()
         self.output_pdb_path      = output_pdb_path
         # options
         self.radius               = properties.get('radius', 5)
@@ -87,7 +87,9 @@ class BindingSite(object):
 
         # Parse structure
         parser      = Bio.PDB.PDBParser()
-        structPDB   = parser.get_structure(structure_name,input_pdb_path)[0]
+        structPDB   = parser.get_structure(structure_name,input_pdb_path)
+        if len(structPDB):
+            structPDB = structPDB[0]
 
         # Use only one chain
         n_chains = structPDB.get_list()
@@ -103,6 +105,7 @@ class BindingSite(object):
         structPDB_seq   = self.__get_pdb_sequence(structPDB)
         if len(structPDB_seq) == 0:
                 raise Exception('Cannot extract AA sequence from the input PDB structure {1}. Wrong format?'.format(input_pdb_path))
+
         else:
                 print "    Found %s residues (chain %s)" % (len(structPDB_seq),self.pdb_chain)
 

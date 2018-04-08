@@ -36,6 +36,7 @@ class Cluster(object):
         self.path = properties.get('path','')
         self.mpirun = properties.get('mpirun', False)
         self.mpirun_np = properties.get('mpirun_np', None)
+        self.cutoff = properties.get('cutoff', 0.1)
 
 
     def launch(self):
@@ -47,7 +48,8 @@ class Cluster(object):
         cmd = [gmx, 'cluster',
                '-s', self.input_gro_path,
                '-f', self.input_xtc_path,
-               '-cl', self.output_pdb_path]
+               '-cl', self.output_pdb_path,
+               '-cutoff', str(self.cutoff)]
 
         if self.mpirun_np is not None:
             cmd.insert(0, str(self.mpirun_np))

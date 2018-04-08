@@ -210,7 +210,7 @@ genrestr:
 
 bindingsite:
   properties:
-    pdb_code: 2GS2
+    pdb_code: 2VGB
     pdb_chain: A
     output_pdb_path: bindingSitetest.pdb
     radius: 5

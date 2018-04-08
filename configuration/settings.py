@@ -17,11 +17,14 @@ class YamlReader(object):
     """Configuration file loader for yaml format files.
     """
 
-    def __init__(self, yaml_path, system):
+    def __init__(self, yaml_path, system, workflow_path=None):
         self.yaml_path= os.path.abspath(yaml_path)
         self.system = system
         self.properties = self._read_yaml()
-        self.properties[system]['workflow_path'] = fu.get_workflow_path(self.properties[system]['workflow_path'])
+        if workflow_path:
+            self.properties[system]['workflow_path'] = workflow_path
+        else:
+            self.properties[system]['workflow_path'] = fu.get_workflow_path(self.properties[system]['workflow_path'])
 
     def _read_yaml(self):
         with open(self.yaml_path, 'r') as stream:

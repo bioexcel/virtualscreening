@@ -56,12 +56,14 @@ def unzip_top(zip_file, dest_dir=None, top_file=None):
     return zip_name
 
 
-def get_logs(path, mutation=None, step=None, console=False):
+def get_logs(path, mutation=None, step=None, console=False, level='INFO'):
     out_log_path = add_step_mutation_path_to_name('out.log', step, mutation, path)
     err_log_path = add_step_mutation_path_to_name('err.log', step, mutation, path)
     logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
     out_Logger = logging.getLogger(out_log_path)
+    out_Logger.setLevel(level)
     err_Logger = logging.getLogger(err_log_path)
+    err_Logger.setLevel(level)
 
     #Creating and formating FileHandler
     out_fileHandler = logging.FileHandler(out_log_path, mode='a', encoding=None, delay=False)

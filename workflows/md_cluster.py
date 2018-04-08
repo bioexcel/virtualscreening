@@ -19,6 +19,7 @@ import mmb_api.uniprot as uniprot
 import gromacs_wrapper.rms as rms
 import gnuplot_wrapper.gnuplot as gnuplot
 import gromacs_extra.ndx2resttop as ndx2resttop
+import gromacs_wrapper.cluster as cluster
 
 
 class MDCluster(object):
@@ -29,13 +30,10 @@ class MDCluster(object):
         self.structure_pdb_path=structure_pdb_path
 
     def launch(self):
-        yaml_path=self.yaml_path
-        system=self.system
-        workflow_path=self.workflow_path
         start_time = time.time()
-        conf = settings.YamlReader(yaml_path, system)
-        fu.create_dir(os.path.abspath(workflow_path))
-        out_log, _ = fu.get_logs(path=workflow_path, console=True, level='DEBUG')
+        conf = settings.YamlReader(self.yaml_path, self.system, self.workflow_path)
+        fu.create_dir(os.path.abspath(self.workflow_path))
+        out_log, _ = fu.get_logs(path=self.workflow_path, console=True, level='DEBUG')
         paths = conf.get_paths_dic()
         prop = conf.get_prop_dic(global_log=out_log)
 
@@ -45,9 +43,9 @@ class MDCluster(object):
 
         out_log.info("Command Executed:")
         out_log.info(" ".join(sys.argv))
-        out_log.info('Workflow_path: '+workflow_path)
-        out_log.info('Config File: '+yaml_path)
-        out_log.info('System: '+system)
+        out_log.info('Workflow_path: '+self.workflow_path)
+        out_log.info('Config File: '+self.yaml_path)
+        out_log.info('System: '+self.system)
         out_log.info('')
 
         out_log.info( 'step1:  mmbpdb ------ Get PDB')
@@ -238,7 +236,7 @@ class MDCluster(object):
         out_log.info('step42: cluster ---------- Clustering MD')
         fu.create_dir(prop['step42_cluster']['path'])
         out_log.debug('\nPaths:\n'+str(paths['step42_cluster'])+'\nProperties:\n'+str(prop['step42_cluster'])+'\n')
-        mdrun.Mdrun(properties=prop['step42_cluster'], **paths['step42_cluster']).launch()
+        cluster.Cluster(properties=prop['step42_cluster'], **paths['step42_cluster']).launch()
 
         #fu.remove_temp_files(['#', '.top', '.plotscript', '.edr', '.xtc', '.itp', '.top', '.log', '.pdb', '.cpt', '.mdp', '.xvg', '.seq'])
 
@@ -246,9 +244,9 @@ class MDCluster(object):
         out_log.info('')
         out_log.info('')
         out_log.info('Execution sucessful: ')
-        out_log.info('  Workflow_path: '+workflow_path)
-        out_log.info('  Config File: '+yaml_path)
-        out_log.info('  System: '+system)
+        out_log.info('  Workflow_path: '+self.workflow_path)
+        out_log.info('  Config File: '+self.yaml_path)
+        out_log.info('  System: '+self.system)
         out_log.info('')
         out_log.info('Elapsed time: '+str(elapsed_time)+' seconds')
         out_log.info('')

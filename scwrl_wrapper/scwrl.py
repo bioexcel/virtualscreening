@@ -28,7 +28,8 @@ class Scwrl4(object):
         self.step = properties.get('step','')
         self.mutation = properties['mut'] if properties.get('mut', None) else properties['mutation']
         pattern = re.compile(("(?P<chain>[a-zA-Z*]+).(?P<wt>[a-zA-Z]{3})(?P<resnum>\d+)(?P<mt>[a-zA-Z]{3})"))
-        self.mut_dict = pattern.match(self.mutation).groupdict()
+        if self.mutation:
+            self.mut_dict = pattern.match(self.mutation).groupdict()
 
     def launch(self):
         """Launches the execution of the SCWRL binary.
