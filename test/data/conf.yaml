@@ -223,7 +223,7 @@ bindingsite:
 
 box:
   properties:
-    input_pdb_path: 2GS2_A.pdb
+    input_pdb_path: cluster.pdb
     resid_pdb_path: bindingSitetest.pdb
     output_pdb_path: bindingSitetest_box.pdb
     offset: 2
