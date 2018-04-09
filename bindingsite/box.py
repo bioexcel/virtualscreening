@@ -16,6 +16,7 @@ import Bio.PDB
 
 import numpy
 import fileinput
+import re
 #from Bio.Struct.Geometry import center_of_mass
 #from Bio import Struct
 
@@ -65,8 +66,12 @@ class Box(object):
 
         # Listing residues to be selected from the residue structure
         residPDB_res_list = []
+        p = re.compile('H_|W_')
         for residPDB_res in residPDB.get_residues():
-            residPDB_res_list.append(residPDB_res.get_id())
+            m_het = p.match(residPDB_res.get_id()[0])
+            if not m_het:
+                residPDB_res_list.append(residPDB_res.get_id())
+
 
         # Mapping selected residues to input structure
         selection_res_list   = []
@@ -77,10 +82,11 @@ class Box(object):
                     selection_res_list.append(struct_res)
                     selection_atoms_num += len(struct_res.get_list())
 
+
         if len(selection_res_list) == 0:
             raise Exception('Cannot match any of the residues listed in %s into %s' % (self.resid_pdb_path,self.input_pdb_path) )
         elif len(selection_res_list) !=  len(residPDB_res_list):
-            raise Exception('Cannot match all the residues listed in %s into %s. Found %s out of %s'  % (self.resid_pdb_path,self.input_pdb_path,len(selection_res_list),len(residPDB_res_list)))
+            warnings.warn('Cannot match all the residues listed in %s into %s. Found %s out of %s'  % (self.resid_pdb_path,self.input_pdb_path,len(selection_res_list),len(residPDB_res_list)))
         else:
             print "Selection residues successfully matched"
 
