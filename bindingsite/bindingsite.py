@@ -281,8 +281,11 @@ class BindingSite(object):
 
         # unselect input PDB atoms not in binding site
         structPDB_bs_atoms = 0
+        p = re.compile('H_|W_')
         for res in list(structPDB):
             if res.get_id() not in structPDB_bs_residues_raw.keys():
+                structPDB.detach_child(res.get_id())
+            elif p.match(res.get_id()[0]):
                 structPDB.detach_child(res.get_id())
             else:
                 structPDB_bs_atoms += len(res.get_list())
