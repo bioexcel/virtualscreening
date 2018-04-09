@@ -80,7 +80,7 @@ class Box(object):
         if len(selection_res_list) == 0:
             raise Exception('Cannot match any of the residues listed in %s into %s' % (self.resid_pdb_path,self.input_pdb_path) )
         elif len(selection_res_list) !=  len(residPDB_res_list):
-            raise Exception('Cannot match all the residues listed in %s into %s. Found %s out of %s'  % (self.resid_pdb_path,self.input_pdb_path,selection_res_num,len(selection_res_list),len(residPDB_res_list)))
+            raise Exception('Cannot match all the residues listed in %s into %s. Found %s out of %s'  % (self.resid_pdb_path,self.input_pdb_path,len(selection_res_list),len(residPDB_res_list)))
         else:
             print "Selection residues successfully matched"
 

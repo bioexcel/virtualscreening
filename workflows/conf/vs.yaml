@@ -10,7 +10,7 @@ linux:
   vina_path: vina
   decoys_sdf_path: /home/pau/projects/virtualscreening/test/data/decoys_final.sdf
   actives_dir_path: /home/pau/projects/virtualscreening/test/data/ligands
-#  receptors_pdb_path: /home/pau/projects/virtualscreening/test/data/cluster.pdb
+  receptors_pdb_path: /home/pau/projects/virtualscreening/test/data/cluster.pdb
   max_ligands: 3
   max_receptors: 2
   # Path to the initial pdb structure (if this field is empty
