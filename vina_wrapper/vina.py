@@ -51,8 +51,8 @@ class AutoDockVina(object):
                '--receptor', self.receptor_pdbqt_path,
                '--center_x=' + x0, '--center_y=' + y0, '--center_z=' + z0,
                '--size_x=' + sidex, '--size_y=' + sidey, '--size_z=' + sidez,
-               '--out', out_log,
-               '--log', log_file]
+               '--out', self.output_path,
+               '--log', self.log_file]
 
         command = cmd_wrapper.CmdWrapper(cmd, out_log, err_log)
         return command.launch()

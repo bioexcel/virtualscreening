@@ -22,6 +22,7 @@ class VinaPrepareReceptor(object):
             raise MGLToolsConfigurationError("Path not found")
         self.executor_path = os.path.join(self.mgltools_path, 'bin', 'pythonsh')
         self.script_path = os.path.join(self.mgltools_path, 'MGLToolsPckgs', 'AutoDockTools', 'Utilities24', 'prepare_receptor4.py')
+        self.path = properties.get('path','')
 
     def launch(self):
         """Launches the execution of the MGLTools prepare_receptor module."""

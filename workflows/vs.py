@@ -110,7 +110,8 @@ def main():
 
     # Split receptor PDB into multiple PDBs
     parser=Bio.PDB.PDBParser()
-    st = parser.get_structure('st', receptors_pdb)
+    st = parser.get_structure('st', receptors_pdb_path)
+    receptors_list=[]
     for i in range(len(st)):
         structure_tmp = st.copy()
         for j in range(len(st)):
@@ -124,7 +125,7 @@ def main():
 
     max_receptors = conf.properties[system].get('max_receptors', len(receptors_list))
     max_ligands = conf.properties[system].get('max_ligands', len(small_molecules_list))
-    for receptor_index, receptor_path in enumerate(receptor_list):
+    for receptor_index, receptor_path in enumerate(receptors_list):
         if receptor_index >= max_receptors: break
         #Prepare receptor
         out_log.info('Prepare receptor')
@@ -140,10 +141,11 @@ def main():
             out_log.debug('\nPaths:\n'+str(paths['prepare_ligand'])+'\nProperties:\n'+str(prop['prepare_ligand'])+'\n')
             prepare_ligand.VinaPrepareLigand(properties=prop['prepare_ligand'], input_ligand_pdb_path=ligand_path, **paths['prepare_ligand']).launch()
             #Launch vina docking
+            paths['vina']['output_path']=os.path.join(prop['vina']['path'], os.path.splitext(os.path.basename(receptor_path))[0]+'_'+os.path.splitext(os.path.basename(ligand_path))[0]+'_docking.pdbqt')
             out_log.info('vina')
             fu.create_dir(prop['vina']['path'])
             out_log.debug('\nPaths:\n'+str(paths['vina'])+'\nProperties:\n'+str(prop['vina'])+'\n')
-            vina.Vina(properties=prop['vina'], **paths['vina']).launch()
+            vina.AutoDockVina(properties=prop['vina'], **paths['vina']).launch()
 
 
     elapsed_time = time.time() - start_time
