@@ -131,21 +131,19 @@ def main():
         fu.create_dir(prop['prepare_receptor']['path'])
         out_log.debug('\nPaths:\n'+str(paths['prepare_receptor'])+'\nProperties:\n'+str(prop['prepare_receptor'])+'\n')
         prepare_receptor.VinaPrepareReceptor(properties=prop['prepare_receptor'], input_receptor_pdb_path=receptor_path, **paths['prepare_receptor']).launch()
+
         for ligand_index, ligand_path in enumerate(small_molecules_list):
             if ligand_index >= max_ligands: break
+            #Prepare Ligand
             out_log.info('Prepare ligand')
             fu.create_dir(prop['prepare_ligand']['path'])
             out_log.debug('\nPaths:\n'+str(paths['prepare_ligand'])+'\nProperties:\n'+str(prop['prepare_ligand'])+'\n')
-            prepare_receptor.VinaPrepareReceptor(properties=prop['prepare_ligand'], input_ligand_pdb_path=ligand_path, **paths['prepare_ligand']).launch()
-
+            prepare_ligand.VinaPrepareLigand(properties=prop['prepare_ligand'], input_ligand_pdb_path=ligand_path, **paths['prepare_ligand']).launch()
+            #Launch vina docking
             out_log.info('vina')
             fu.create_dir(prop['vina']['path'])
             out_log.debug('\nPaths:\n'+str(paths['vina'])+'\nProperties:\n'+str(prop['vina'])+'\n')
-            prepare_receptor.VinaPrepareReceptor(properties=prop['vina'], **paths['vina']).launch()
-
-
-
-
+            vina.Vina(properties=prop['vina'], **paths['vina']).launch()
 
 
     elapsed_time = time.time() - start_time
